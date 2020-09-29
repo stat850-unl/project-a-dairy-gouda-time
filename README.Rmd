@@ -30,21 +30,7 @@ Once you have received feedback on your project proposal (via Canvas) you may al
 ## Data Set
 Provide a link to your dataset here, and a description of the variables in the data set.
 
-https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/fluid_milk_sales.csv
-
-https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/milkcow_facts.csv
-
-
-```{r, readdata}
-stateprod <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/state_milk_production.csv")
-write.csv(stateprod, "stateprod.csv")
-
-products <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/milk_products_facts.csv")
-write.csv(products, "products.csv")
-
-
-
-```
+See csv files
 
 ## Potential Topics to Explore Using the Data Set
 Describe avenues you might explore using the data
@@ -53,3 +39,5 @@ Describe avenues you might explore using the data
 Samantha Teten
 Kassidy Buse
 Becca Furbeck
+
+## Stuff to look at
