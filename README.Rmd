@@ -42,8 +42,7 @@ write.csv(stateprod, "stateprod.csv")
 products <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/milk_products_facts.csv")
 write.csv(products, "products.csv")
 
-cheese <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/clean_cheese.csv")
-write.csv(cheese, "cheese.csv")
+
 
 ```
 
@@ -52,4 +51,5 @@ Describe avenues you might explore using the data
 
 ## Group Members
 Samantha Teten
-
+Kassidy Buse
+Becca Furbeck
