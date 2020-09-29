@@ -1,6 +1,6 @@
 ---
 title: "Stat 850 Project Description"
-author: "Firstname Lastname, Firstname Lastname, Samantha Teten"
+author: "Rebecca Furbeck, Firstname Lastname, Samantha Teten"
 output: github_document
 ---
 
@@ -47,7 +47,13 @@ write.csv(products, "products.csv")
 ```
 
 ## Potential Topics to Explore Using the Data Set
-Describe avenues you might explore using the data
+Scenario: We are a team of agricultural scientists, who have been contacted by a business group interested in starting a dairy products creamery operation. They are looking to learn 
+
+We intend to learn:
+What in the world in happening in 2020 with milk prices? 
+What location should we processed in? (Investigate which states are excelling in milk production to have a supply chain)
+What products should we make? (Investigate the sales of products over time)
+What difficulties could arise or things should we be aware of? (FDA Recalls)
 
 ## Group Members
 Samantha Teten
