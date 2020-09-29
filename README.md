@@ -21,10 +21,20 @@ instead of the project proposal.
 Provide a link to your dataset here, and a description of the variables
 in the data set.
 
+
+
+https://www.fda.gov/about-fda/open-government-fda-data-sets/recalls-data-sets
 ## Potential Topics to Explore Using the Data Set
 
-Describe avenues you might explore using the data
+Scenario: We are a team of agricultural scientists, who have been contacted by a business group interested in starting a dairy products creamery operation. They are looking to learn 
+
+We intend to learn:
+What in the world in happening in 2020 with milk prices? 
+What location should we processed in? (Investigate which states are excelling in milk production to have a supply chain)
+What products should we make? (Investigate the sales of products over time)
+
 
 ## Group Members
 
-List all of the project contributors here.
+Kassidy Buse
+Rebecca Furbeck
