@@ -1,6 +1,6 @@
 ---
 title: "Stat 850 Project Description"
-author: "Firstname Lastname, Firstname Lastname, ..."
+author: "Firstname Lastname, Firstname Lastname, Samantha Teten"
 output: github_document
 ---
 
@@ -29,10 +29,17 @@ Once you have received feedback on your project proposal (via Canvas) you may al
 
 ## Data Set
 Provide a link to your dataset here, and a description of the variables in the data set.
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/clean_cheese.csv
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/fluid_milk_sales.csv
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/milk_products_facts.csv
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/milkcow_facts.csv
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-29/state_milk_production.csv
+
+
 
 ## Potential Topics to Explore Using the Data Set
 Describe avenues you might explore using the data
 
 ## Group Members
-List all of the project contributors here.
+Samantha Teten
 
