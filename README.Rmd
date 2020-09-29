@@ -47,3 +47,5 @@ Kassidy Buse
 Becca Furbeck
 
 ## Stuff to look at
+- map of change in milk prod for each state (US Map) from 1970 to 2014
+-change in milk production from 1970 to 2014 for top 3 states
