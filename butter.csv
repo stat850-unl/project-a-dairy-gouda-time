@@ -1,0 +1,29 @@
+"Butter, one pound1",,,
+Year,Retail price,Farm value,Farm share
+,Dollars,,Percent
+2000,2.14,1.03,48
+2001,2.68,1.52,57
+2002,2.22,0.99,44
+2003,2.05,1.00,49
+2004,2.79,1.69,61
+2005,2.64,1.41,53
+2006,2.47,1.09,44
+2007,2.63,1.22,46
+2008,2.64,1.29,49
+2009,2.39,1.04,43
+2010,2.73,1.53,56
+2011,2.97,1.78,60
+2012,2.68,1.42,53
+2013,2.70,1.38,51
+2014,3.19,1.97,62
+2015,3.43,1.89,55
+2016,3.62,1.90,52
+2017,3.54,2.15,61
+1Estimates of farm value are based on minimum prices reported by USDA's Agricultural Marketing Service for Class IV products. They do not account for over-order payments.,,,
+,,,
+,,,
+,,,
+,,,
+"Source: Calculated by ERS, USDA, using data on retail",,,
+prices from the National Consumer Panel and data on,,,
+farm-gate prices published by USDA agencies.,,,

@@ -1,0 +1,30 @@
+"Cheddar cheese, one pound1",,,
+Year,Retail price,Farm value,Farm share
+,Dollars,,Percent
+2000,3.83,0.98,26
+2001,4.03,1.28,32
+2002,4.22,1.04,25
+2003,3.95,1.17,30
+2004,4.27,1.55,36
+2005,4.38,1.39,32
+2006,4.25,1.14,27
+2007,4.23,1.66,39
+2008,4.73,1.77,37
+2009,4.67,1.14,24
+2010,4.71,1.40,30
+2011,5.42,1.72,32
+2012,5.63,1.60,28
+2013,5.56,1.66,30
+2014,5.54,2.07,37
+2015,5.38,1.54,29
+2016,5.23,1.49,28
+2017,4.90,1.54,32
+2018,5.14,1.43,28
+1Estimates of farm value are based on minimum prices reported by USDA's Agricultural Marketing Service for Class III products. They do not account for over-order payments.,,,
+,,,
+,,,
+,,,
+,,,
+"Source: USDA, Economic Research Service calculations, using ",,,
+data on retail prices from the Bureau of Labor Statistics and data ,,,
+on farm-gate prices published by USDA agencies.,,,
