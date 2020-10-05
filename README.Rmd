@@ -1,6 +1,6 @@
 ---
 title: "Stat 850 Project Description"
-author: "Rebecca Furbeck, Firstname Lastname, Samantha Teten"
+author: "Rebecca Furbeck, Kassidy Buse, Samantha Teten"
 output: github_document
 ---
 
@@ -19,19 +19,20 @@ knitr::opts_chunk$set(engine.path=list(sas=saspath, saslog=saspath, sashtml=sasp
 library(SASmarkdown)
 ```
 
-## Instructions
-
-Each member of your team should modify this document in some way and push their modifications to the repository in a separate commit. This will ensure that you have set your repository up in a way that ensures all group members are working with the same repository. 
-
-Note that you must compile your readme (this document) for it to properly display as part of your github repository. 
-
-Once you have received feedback on your project proposal (via Canvas) you may alter this README so that it describes your final project instead of the project proposal. 
 
 ## Data Set
-Provide a link to your dataset here, and a description of the variables in the data set.
+We are using 2 main entities for data.
+
+The first portion is provided by the USDA ERS:
+https://www.ers.usda.gov/data-products/dairy-data/
+Variables in these datasets (see CSVs below) are mainly numeric, pertaining to production and sales of dairy products. 
+
+The second being the FDA recalls and notices: https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts
+Variables included in this data set are dates, and characters detailing food brand, product description, product type, and recall reason. 
 
 See csv files in repository.
 ```{r}
+
 whole_milk<-readLines("whole_milk.csv")
 head(whole_milk)
 NROW(whole_milk)
@@ -71,3 +72,4 @@ Becca Furbeck
 - map of change in milk prod for each state (US Map) from 1970 to 2014
 -change in milk production from 1970 to 2014 for top 3 states
 -spread of farm price from retail price over time
+-Reasons for recalls of dairy products
