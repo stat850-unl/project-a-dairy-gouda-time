@@ -32,8 +32,19 @@ Variables included in this data set are dates, and characters detailing food bra
 
 See csv files in repository.
 ```{r}
+library(readr)
+library(tidyverse)
+whole_milk_header <- read_csv("whole_milk.csv", n_max = 2) %>%
+  mutate(across(everything(), ~ifelse(is.na(.), "", .))) %>%
+  summarize(across(everything(), paste, collapse = "_")) %>%
+  mutate(across(everything(), str_remove, "_$")) %>% 
+  unlist() %>% as.character()
+whole_milk <- read_csv("whole_milk.csv", 
+                       col_names = whole_milk_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
 
-whole_milk<-readLines("whole_milk.csv")
 head(whole_milk)
 NROW(whole_milk)
 
