@@ -1,0 +1,45 @@
+---
+title: "Wikiscrape"
+author: "Becca Furbeck"
+date: "11/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r packages}
+
+```
+Well...the FDA recall dataset is actually a nightmare. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories, so I decided to search the dairy items by item themself.
+```{r FDA}
+
+```
+
+So...I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
+```{r wikipedia}
+library(purrr)
+library(htmltab)
+library(tidyr)
+url = 'https://en.wikipedia.org/wiki/List_of_dairy_products'
+url2 = "https://en.wikipedia.org/wiki/List_of_cheeses"
+
+tbls <- map2(url, 1:23, htmltab, rm_nodata_cols =F)
+tblname<-map(tbls, 1)
+dairy1<-unlist(tblname)
+
+tbls2 <- map2(url2, 1:23, htmltab, rm_nodata_cols =F)
+tblname2<-map(tbls2, 1)
+dairy2<-unlist(tblname2)
+
+dairy<-c(dairy1,dairy2)
+```
+
+```{r FDA filter}
+library(stringr)
+FDA %>% filter(str_detect('Product Description', dairy))
+
+
+```
