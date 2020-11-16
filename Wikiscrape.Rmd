@@ -9,16 +9,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+First of all...the FDA makes getting their data somewhat irritating to me (as in it does not come in comma-seperated values). XML scrape it is!
+```{r}
+library(XML)
+FDAsite = 'http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=17'
 
-```{r packages}
+tbls_xml <- readHTMLTable(FDAsite)
 
 ```
-Well...the FDA recall dataset is actually a nightmare. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories, so I decided to search the dairy items by item themself.
+
+
+Well...the FDA recall dataset is actually a mess. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories, so I decided to search the dairy items by the Production Description.
 ```{r FDA}
-
+FDA %>% filter(`Product Description`=="8-20-2020, Whole Foods Market")
 ```
 
-So...I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
+I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
 ```{r wikipedia}
 library(purrr)
 library(htmltab)
@@ -37,9 +43,24 @@ dairy2<-unlist(tblname2)
 dairy<-c(dairy1,dairy2)
 ```
 
+
+Then the filtering nightmare. "So" pulled soybean so I had to pull that out, and "butter" gave an inevitable "Nut butter" problem that had to be negated. 
 ```{r FDA filter}
 library(stringr)
-FDA %>% filter(str_detect('Product Description', dairy))
+library(dplyr)
 
+dairy
+dairy2<-print(dairy[dairy!="So"])     
+
+matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$`Product Description`)
+matchesdairy2<-print(FDA$`Product Description`[matchesdairy])
+
+getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut")
+
+filtereditems <- grepl(paste(getout, collapse = "|"), matchesdairy2)
+filtereditems2<-print(matchesdairy2[filtereditems==F])
+
+DairySet<-FDA %>% filter(`Product Description` %in% filtereditems2)
 
 ```
+
