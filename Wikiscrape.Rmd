@@ -11,25 +11,39 @@ knitr::opts_chunk$set(echo = TRUE)
 
 First of all...the FDA makes getting their data somewhat irritating to me (as in it does not come in comma-separated values). XML scrape it is! I procured data from the last 5 years.
 ```{r}
-library(XML)
-#2020-2018 are on current listing exportable as excel
+#2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
 FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
+FDA<-read.csv("FDA.csv", skip = 1)
+```
 
+```{r}
+library(XML)
 #Archived 2017 has 14 pages
 FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
 #Archived 2016 has 18 pages
 FDA2016site = 'http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=17'
 
- 
-
 tbls_xml <- readHTMLTable(FDA2017site)
 
+tbls16<-capture.output(for (i in 1:14){
+  print(paste0('http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=',i,''))
+})
+
+tbls17<-capture.output(for (i in 1:18){
+  (print(paste0('http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=',i,'')))
+})
+
+FDAoldtbl<-c(tbls16,tbls17)
+FDAoldtabl<-as.data.frame(FDAoldtbl)
+
+hmm<-FDAoldtbl %>% map(readHTMLTable)
 ```
 
 
 Well...the FDA recall dataset is actually a mess. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories, so I decided to search the dairy items by the Production Description.
 ```{r FDA}
-FDA %>% filter(`Product Description`=="8-20-2020, Whole Foods Market")
+library(dplyr)
+FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
 ```
 
 I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
@@ -60,15 +74,15 @@ library(dplyr)
 dairy
 dairy2<-print(dairy[dairy!="So"])     
 
-matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$`Product Description`)
-matchesdairy2<-print(FDA$`Product Description`[matchesdairy])
+matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$Product.Description)
+matchesdairy2<-print(FDA$Product.Description[matchesdairy])
 
 getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut")
 
 filtereditems <- grepl(paste(getout, collapse = "|"), matchesdairy2)
 filtereditems2<-print(matchesdairy2[filtereditems==F])
 
-DairySet<-FDA %>% filter(`Product Description` %in% filtereditems2)
+DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 
 ```
 
@@ -79,7 +93,7 @@ library(tm)
 library(RColorBrewer)
 library(wordcloud)
 
-nopunct<-gsub('[[:punct:] ]+',' ',DairySet$`Recall Reason Description`)
+nopunct<-gsub('[[:punct:] ]+',' ',DairySet$Recall.Reason.Description)
 nopunct<-trimws(nopunct)
 wordsextract<-str_split(nopunct, " ")
 wordsextract<-unlist(wordsextract)
@@ -92,5 +106,6 @@ wordclouddf <- data.frame(word = names(words),freq=words)
 
 
 set.seed(5658) # for reproducibility 
-wordcloud(words = wordclouddf$word, freq = df$freq, min.freq = 1,           max.words=200, random.order=FALSE, rot.per=0.25,  scale=c(3.5,0.25),colors=brewer.pal(8, "PuOr")) #purple and orange to be color friendly
+wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,  scale=c(3.5,0.25),colors=brewer.pal(8, "PuOr"))
+#purple and orange to be color friendly
 ```
