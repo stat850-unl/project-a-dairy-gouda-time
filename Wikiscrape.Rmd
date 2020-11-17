@@ -121,6 +121,6 @@ wordclouddf <- data.frame(word = names(words),freq=words)
 
 
 set.seed(5658) # for reproducibility 
-wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,  scale=c(3.5,0.25),colors=brewer.pal(8, "PuOr"))
+wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
 ```
