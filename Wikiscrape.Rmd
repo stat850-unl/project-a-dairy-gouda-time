@@ -19,6 +19,7 @@ FDA1<-read.csv("FDA.csv", skip = 1)
 ```{r}
 library(XML)
 library(dplyr)
+library(purrr)
 #Archived 2017 has 14 pages
 FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
 #Archived 2016 has 18 pages
@@ -62,7 +63,7 @@ FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
 ```
 
 I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
-```{r wikipedia}
+```{r wikipedia, echo=FALSE}
 library(purrr)
 library(htmltab)
 library(tidyr)
@@ -82,7 +83,7 @@ dairy<-c(dairy1,dairy2)
 
 
 Then the filtering nightmare. "So" pulled soybean so I had to pull that out, and "butter" gave an inevitable "Nut butter" problem that had to be negated. 
-```{r FDA filter}
+```{r FDA filter, echo=FALSE}
 library(stringr)
 library(dplyr)
 
@@ -99,6 +100,13 @@ filtereditems2<-print(matchesdairy2[filtereditems==F])
 
 DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 
+```
+
+```{r, echo=FALSE}
+library(lubridate)
+DairySet<-DairySet %>% mutate(Date = mdy(Date))%>%mutate(year = lubridate::year(Date),
+                    month = lubridate::month(Date),
+                    day = lubridate::day(Date))
 ```
 
 Now that we have filtered the relevant items, it is time to investigate what are the commons reasons for recall. In order to make a visualization for this, I made a wordcloud. 
@@ -123,4 +131,20 @@ wordclouddf <- data.frame(word = names(words),freq=words)
 set.seed(5658) # for reproducibility 
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
+```
+
+
+I was curious if there were particular times of year to worry about *Listeria*; *E.coli* is a mesophile, meaning it likes body temperature for growth, so we generally see its recalls peak during the summer. *Listeria*, on the other hand, is a psychrophile, or a "cold-lover". Becuase it grows at refrigeration temperatures, and cheese is generally kept in a cold chain, I was not expecting to see peak months. However, February jumped out.
+```{r}
+library(ggplot2)
+ggplot(DairySet, aes(month))+geom_histogram()
+
+```
+
+I decided to investigate further as to what went wrong this month, and saw multiple retailers (Meijer, Sargento) associated with *Listeria* in cheese from the 10th through the 28th of Feburary, 2017. I thought this could be an outbreak related to a copacking distributor. Often, commercial retailers or large brands will have separate facilities assist in manufacturing product for their brand to broaden the supply chain. 
+```{r}
+febtable<-DairySet %>% filter(month == "2") %>% select("Date","Product.Description","Recall.Reason.Description","Company.Name")
+library(DT)
+DT::datatable(febtable)
+```
 ```
