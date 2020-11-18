@@ -13,11 +13,12 @@ First of all...the FDA makes getting their data somewhat irritating to me (as in
 ```{r}
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
 FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
-FDA<-read.csv("FDA.csv", skip = 1)
+FDA1<-read.csv("FDA.csv", skip = 1)
 ```
 
 ```{r}
 library(XML)
+library(dplyr)
 #Archived 2017 has 14 pages
 FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
 #Archived 2016 has 18 pages
@@ -35,8 +36,22 @@ tbls17<-capture.output(for (i in 1:18){
 
 FDAoldtbl<-c(tbls16,tbls17)
 FDAoldtabl<-as.data.frame(FDAoldtbl)
+front<-gsub("^.....","",FDAoldtabl$FDAoldtbl)
+back<-gsub('.{1}$','', front)
+OldJoin<-back %>% map(readHTMLTable)
 
-hmm<-FDAoldtbl %>% map(readHTMLTable)
+Old<-rbind(OldJoin[[1]][["NULL"]],OldJoin[[2]][["NULL"]],OldJoin[[3]][["NULL"]],OldJoin[[4]][["NULL"]],OldJoin[[5]][["NULL"]],OldJoin[[6]][["NULL"]],OldJoin[[7]][["NULL"]],OldJoin[[8]][["NULL"]],OldJoin[[9]][["NULL"]],OldJoin[[10]][["NULL"]],OldJoin[[11]][["NULL"]],OldJoin[[12]][["NULL"]],OldJoin[[13]][["NULL"]],OldJoin[[14]][["NULL"]],OldJoin[[15]][["NULL"]],OldJoin[[16]][["NULL"]],OldJoin[[17]][["NULL"]],OldJoin[[18]][["NULL"]],OldJoin[[19]][["NULL"]],OldJoin[[20]][["NULL"]],OldJoin[[21]][["NULL"]],OldJoin[[22]][["NULL"]],OldJoin[[23]][["NULL"]],OldJoin[[24]][["NULL"]],OldJoin[[25]][["NULL"]],OldJoin[[26]][["NULL"]],OldJoin[[27]][["NULL"]],OldJoin[[28]][["NULL"]],OldJoin[[29]][["NULL"]],OldJoin[[30]][["NULL"]],OldJoin[[31]][["NULL"]],OldJoin[[32]][["NULL"]])
+Old<-as.data.frame(Old)
+
+
+Old<-Old %>% select(-" Details/Photo ") 
+FDA1<-FDA1 %>% select(-"Product.Type")
+
+matchnames<-c("Date","Brand.Name.s.","Product.Description","Recall.Reason.Description","Company.Name")
+colnames(Old)<-matchnames
+Old<-as.data.frame(Old)
+FDA1<-as.data.frame(FDA1)
+FDA<-rbind(Old,FDA1)
 ```
 
 
@@ -77,7 +92,7 @@ dairy2<-print(dairy[dairy!="So"])
 matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$Product.Description)
 matchesdairy2<-print(FDA$Product.Description[matchesdairy])
 
-getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut")
+getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut", "Cashew", "Imitation")
 
 filtereditems <- grepl(paste(getout, collapse = "|"), matchesdairy2)
 filtereditems2<-print(matchesdairy2[filtereditems==F])
@@ -106,6 +121,6 @@ wordclouddf <- data.frame(word = names(words),freq=words)
 
 
 set.seed(5658) # for reproducibility 
-wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,  scale=c(3.5,0.25),colors=brewer.pal(8, "PuOr"))
+wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
 ```
