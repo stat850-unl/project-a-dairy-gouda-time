@@ -10,15 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 First of all...the FDA makes getting their data somewhat irritating to me (as in it does not come in comma-separated values). XML scrape it is! I procured data from the last 5 years.
-```{r}
+```{r, include=FALSE}
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
 FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
 FDA1<-read.csv("FDA.csv", skip = 1)
-```
 
-```{r}
 library(XML)
 library(dplyr)
+library(purrr)
 #Archived 2017 has 14 pages
 FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
 #Archived 2016 has 18 pages
@@ -56,13 +55,13 @@ FDA<-rbind(Old,FDA1)
 
 
 Well...the FDA recall dataset is actually a mess. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories, so I decided to search the dairy items by the Production Description.
-```{r FDA}
+```{r FDA, echo=FALSE}
 library(dplyr)
 FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
 ```
 
 I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
-```{r wikipedia}
+```{r wikipedia, include=FALSE}
 library(purrr)
 library(htmltab)
 library(tidyr)
@@ -82,7 +81,7 @@ dairy<-c(dairy1,dairy2)
 
 
 Then the filtering nightmare. "So" pulled soybean so I had to pull that out, and "butter" gave an inevitable "Nut butter" problem that had to be negated. 
-```{r FDA filter}
+```{r FDA filter, include=FALSE}
 library(stringr)
 library(dplyr)
 
@@ -101,8 +100,16 @@ DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 
 ```
 
+```{r, include=FALSE}
+library(lubridate)
+DairySet<-DairySet %>% mutate(Date = mdy(Date))%>%mutate(year = lubridate::year(Date),
+                    month = lubridate::month(Date),
+                    day = lubridate::day(Date))
+DairySet$month<-month.abb[DairySet$month]
+```
+
 Now that we have filtered the relevant items, it is time to investigate what are the commons reasons for recall. In order to make a visualization for this, I made a wordcloud. 
-```{r}
+```{r, echo=FALSE}
 library(stringr)
 library(tm)
 library(RColorBrewer)
@@ -124,3 +131,19 @@ set.seed(5658) # for reproducibility
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
 ```
+From the world cloud we can see that "undeclared" and "*Listeria*" are of high occurance. Unldeclared is a term associated with the inclusion of unlabeled allergens. Production must be sure to label allergens if they are in product, and shifts must occur with allergen containing products at the end to avoid contamination of products that to not contain them. *Listeria* is of high concern, as this pathogen is potentially fatal. It can produce biofilms, sticky polysaccharides that allow it to adhere to processing surfaces if sanitation is not adequate.  
+
+I was curious if there were particular times of year to worry about *Listeria*; *E.coli* is a mesophile, meaning it likes body temperature for growth, so we generally see its recalls peak during the summer. *Listeria*, on the other hand, is a psychrophile, or a "cold-lover". Becuase it grows at refrigeration temperatures, and cheese is generally kept in a cold chain, I was not expecting to see peak months. However, February jumped out.
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
+```
+
+I decided to investigate further as to what went wrong this month, and saw multiple retailers (Meijer, Sargento) associated with *Listeria* in cheese from the 10th through the 28th of February, 2017. I thought this could be an outbreak related to a copacking distributor. Often, commercial retailers or large brands will have separate facilities assist in manufacturing product for their brand to broaden the supply chain. 
+```{r, echo=FALSE}
+febtable<-DairySet %>% filter(month == "2") %>% select("Date","Product.Description","Recall.Reason.Description","Company.Name")
+library(DT)
+DT::datatable(febtable)
+```
+
+A quick web search [confirmed](https://www.statnews.com/2017/03/09/cheese-recall-sargento-indiana/) this suspicion. Luckily, no one became sick from this outbreak, because such an efficient recall system was in place, however Sargento dropped this facility as a supplier. If our business person was looking to co-pack, they should be sure to implement safety and recall protocols. Even if they do not wish to copack, and remain a smaller producer, *Listeria* still remains a hazard to look out for, and they should be sure to understand how to mitigate its presence in product, otherwise there could be [large consequences](https://www.foodsafetynews.com/2018/04/vulto-creamery-shut-down-because-owner-did-not-understand/).

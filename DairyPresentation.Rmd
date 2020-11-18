@@ -15,11 +15,19 @@ knitr::opts_chunk$set(echo = FALSE)
 
 Our team has been approached by a business person who happens to love dairy products! They are interested in starting a dairy to live out their childhood dreams, but are not sure where to start. We combed the USDA and FDA data to make recommendations to ensure they get the best dairy possible. 
 </div>
+
+## HOLY COW
+
+make cow pic graphic and put here Becca okay
+
+There is a lot to consider! Maybe exploratory analysis can help!
+
 ## Questions to Answer 
 
 - Where is the best place in the United States to run a dairy operation?
 - What products are the most profitable?
 - What are hazards to look out for during production to avoid recalls?
+
 
 ## Slide with R Output
 
@@ -32,4 +40,41 @@ summary(cars)
 ```{r pressure}
 plot(pressure)
 ```
+
+
+
+## Where should we operate?
+
+Kassidy introduces her dataset
+
+## Kassidy Plot
+
+hooray U.S.A.
+
+## Kassidy recommendations
+
+put your farm in a state where you can make money yo
+
+## What Products should we make?
+
+Sam introduces her dataset
+
+## Sam Plot
+
+## Sam Recommendations
+
+make this product and make mad money yo
+
+## What should the producer look out for?
+
+Becca introduce dataset/scrape methods
+
+## Worldcloud Plot
+
+## Monthly Occurances - Major Outbreak Plot
+
+## Becca Recommendations
+
+Don't mess with *Listeria* yo
+
 
