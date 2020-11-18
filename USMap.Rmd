@@ -12,114 +12,124 @@ knitr::opts_chunk$set(echo = TRUE)
 First, we need to pull in the data set that includes the milk production for each state and region
 ```{r}
 urlfile <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/state_milk_production.csv"
-dairybystate <- read.csv(urlfile)
+dairycsv <- read.csv(urlfile)
+dairybystate <- as.data.frame(dairycsv)
+```
+
+explore a little
+```{r}
+range(dairybystate$milk_produced)
+```
+
+Smallest value is     3,000,000
+Largest value is 42,339,000,000
+Yikes that is a large range. 
+```{r}
+which.min(dairybystate$milk_produced)
+which.max(dairybystate$milk_produced)
+```
+
+Wonder who they are (let's be honest...the low is either AK or HI)
+```{r}
+dairybystate[2199,]
+```
+Like I said, AK or HI. I'm betting the high is CA...because happy cows are in CA...or just very hot ones
+```{r}
+dairybystate[2248,]
+```
+
+Of course it is CA...and 2014 was a great year for dairy so that isn't surprising at all.
+Filter said data for future use
+```{r}
+library(tidyverse)
+dairy70 <- dairybystate %>% filter(year == 1970)
+dairy80 <- dairybystate %>% filter(year == 1980)
+dairy90 <- dairybystate %>% filter(year == 1990)
+dairy00 <- dairybystate %>% filter(year == 2000)
+dairy10 <- dairybystate %>% filter(year == 2010)
+dairy17 <- dairybystate %>% filter(year == 2017)
+```
+
+```{r}
+range(dairy70$milk_produced)
+
+```
+```{r}
+range(dairy80$milk_produced)
 ```
 
 ## Where Kassidy's eyes were bigger than her plate: 
 
 ### Making a freaking cool map
 
-Basically everything is copied from this neat walk through: ["http://kweatherholtz.github.io/blog/animated-map-of-US-settlement/"]
-
-lots of packages
+1970
 ```{r}
-library(USAboundaries)  
-library(dplyr)          
-library(lubridate)      
-library(rgdal)          
-library(maptools)       
-library(ggplot2)       
-library(gganimate)      
-library(viridis)        
+library(usmap)
+library(ggplot2)
+
+plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state from in 1970") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
 ```
 
-like any new venture, we establish some boundaries (by makeing a function) 
+1980
 ```{r}
-get_boundaries <- function(date, type = "state"){
-  # shape file
-  sp <- us_boundaries(as.Date(date), type = type)
-  
-  # get info about each area (like state, territory, etc)
-  metadata <- sp %>%
-    as.data.frame() %>%
-    mutate(id = as.character(id_num -1)) %>%
-     select(id, name, terr_type)
-  
+library(usmap)
+library(ggplot2)
 
-  # Convert coordinates to be more realistic
-
-  sp_t <- spTransform(sp, CRS("+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs"))
-  rownames(sp_t@data) <- as.character(as.numeric(rownames(sp_t@data)) - 1)
-  
-  # and because alaska and hawaii are *special*, we have to move them around
-  
-  # extract, then rotate, shrink & move alaska (and reset projection)
-  alaska <-  
-    if(type == "state"){
-      sp_t[grep("Alaska", sp_t$full_name, fixed = TRUE),]
-    } else if (type == "county"){
-      sp_t[grep("Alaska", sp_t$state_terr, fixed = TRUE),]
-    }
-
-  alaska <- elide(alaska, rotate=-50)
-  alaska <- elide(alaska, scale=max(apply(bbox(alaska), 1, diff)) / 2.3)
-  alaska <- elide(alaska, shift=c(-2100000, -2500000))
-  proj4string(alaska) <- proj4string(sp_t)
-  
-  # extract, then rotate & shift hawaii
-  hawaii <-  
-    if(type == "state"){
-      sp_t[grep("Hawaii", sp_t$full_name, fixed = TRUE),]
-    } else if (type == "county"){
-      sp_t[grep("Hawaii", sp_t$state_terr, fixed = TRUE),]
-    }
-
-  hawaii <- elide(hawaii, rotate=-35)
-  hawaii <- elide(hawaii, shift=c(5400000, -1400000))
-  proj4string(hawaii) <- proj4string(sp_t)
-  
-  # I think this just removes the previous HI and AK and adds in the ones we made above
-  sp_t <-
-    if(type == "state"){
-      sp_t[!grepl("Alaska|Hawaii", sp_t$full_name),]
-    } else if(type == "county") {
-      sp_t[!grepl("Alaska|Hawaii", sp_t$state_terr),]
-    }
-
-  sp_t <- rbind(sp_t, alaska, hawaii, makeUniqueIDs = TRUE)
-  
-  # give her a shape!
-  borders <- sp_t %>%
-    fortify() %>%
-    as.data.frame() %>%
-    mutate(year = year(date)) %>%
-    left_join(metadata, by = "id")
-}
+plot_usmap(regions = "states", data = dairy80, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 1980") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
 ```
 
-now, we make a timeline
+1990
 ```{r}
-create_timeline <- function(dairybystate_df){
- 
-  years <- unique(dairybystate_df$year)
+library(usmap)
+library(ggplot2)
 
-
-  timeline_range <- with(boundary_df, 
-                         seq(from = min(long),
-                             to = max(long),
-                             length.out = length(years)))
-  
-
-  timeline_y <- max(dairybystate_df$lat) * 1.2
-  
-  timeline <- data.frame(
-    x = timeline_range,
-    y = timeline_y,
-    year = years
-  )
-  
-  return(timeline)
-}
+plot_usmap(regions = "states", data = dairy90, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 1990") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
 ```
 
-We got the functions, let's make a map
+2000
+```{r}
+library(usmap)
+library(ggplot2)
+
+plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2000") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+```
+
+2010
+```{r}
+library(usmap)
+library(ggplot2)
+
+plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2010") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+```
+
+2017
+```{r}
+library(usmap)
+library(ggplot2)
+
+plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2017") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+```
