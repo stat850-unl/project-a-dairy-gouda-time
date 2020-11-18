@@ -1,0 +1,125 @@
+---
+title: "USMap"
+author: "Kassidy Buse"
+date: "11/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+First, we need to pull in the data set that includes the milk production for each state and region
+```{r}
+urlfile <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/state_milk_production.csv"
+dairybystate <- read.csv(urlfile)
+```
+
+## Where Kassidy's eyes were bigger than her plate: 
+
+### Making a freaking cool map
+
+Basically everything is copied from this neat walk through: ["http://kweatherholtz.github.io/blog/animated-map-of-US-settlement/"]
+
+lots of packages
+```{r}
+library(USAboundaries)  
+library(dplyr)          
+library(lubridate)      
+library(rgdal)          
+library(maptools)       
+library(ggplot2)       
+library(gganimate)      
+library(viridis)        
+```
+
+like any new venture, we establish some boundaries (by makeing a function) 
+```{r}
+get_boundaries <- function(date, type = "state"){
+  # shape file
+  sp <- us_boundaries(as.Date(date), type = type)
+  
+  # get info about each area (like state, territory, etc)
+  metadata <- sp %>%
+    as.data.frame() %>%
+    mutate(id = as.character(id_num -1)) %>%
+     select(id, name, terr_type)
+  
+
+  # Convert coordinates to be more realistic
+
+  sp_t <- spTransform(sp, CRS("+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs"))
+  rownames(sp_t@data) <- as.character(as.numeric(rownames(sp_t@data)) - 1)
+  
+  # and because alaska and hawaii are *special*, we have to move them around
+  
+  # extract, then rotate, shrink & move alaska (and reset projection)
+  alaska <-  
+    if(type == "state"){
+      sp_t[grep("Alaska", sp_t$full_name, fixed = TRUE),]
+    } else if (type == "county"){
+      sp_t[grep("Alaska", sp_t$state_terr, fixed = TRUE),]
+    }
+
+  alaska <- elide(alaska, rotate=-50)
+  alaska <- elide(alaska, scale=max(apply(bbox(alaska), 1, diff)) / 2.3)
+  alaska <- elide(alaska, shift=c(-2100000, -2500000))
+  proj4string(alaska) <- proj4string(sp_t)
+  
+  # extract, then rotate & shift hawaii
+  hawaii <-  
+    if(type == "state"){
+      sp_t[grep("Hawaii", sp_t$full_name, fixed = TRUE),]
+    } else if (type == "county"){
+      sp_t[grep("Hawaii", sp_t$state_terr, fixed = TRUE),]
+    }
+
+  hawaii <- elide(hawaii, rotate=-35)
+  hawaii <- elide(hawaii, shift=c(5400000, -1400000))
+  proj4string(hawaii) <- proj4string(sp_t)
+  
+  # I think this just removes the previous HI and AK and adds in the ones we made above
+  sp_t <-
+    if(type == "state"){
+      sp_t[!grepl("Alaska|Hawaii", sp_t$full_name),]
+    } else if(type == "county") {
+      sp_t[!grepl("Alaska|Hawaii", sp_t$state_terr),]
+    }
+
+  sp_t <- rbind(sp_t, alaska, hawaii, makeUniqueIDs = TRUE)
+  
+  # give her a shape!
+  borders <- sp_t %>%
+    fortify() %>%
+    as.data.frame() %>%
+    mutate(year = year(date)) %>%
+    left_join(metadata, by = "id")
+}
+```
+
+now, we make a timeline
+```{r}
+create_timeline <- function(dairybystate_df){
+ 
+  years <- unique(dairybystate_df$year)
+
+
+  timeline_range <- with(boundary_df, 
+                         seq(from = min(long),
+                             to = max(long),
+                             length.out = length(years)))
+  
+
+  timeline_y <- max(dairybystate_df$lat) * 1.2
+  
+  timeline <- data.frame(
+    x = timeline_range,
+    y = timeline_y,
+    year = years
+  )
+  
+  return(timeline)
+}
+```
+
+We got the functions, let's make a map
