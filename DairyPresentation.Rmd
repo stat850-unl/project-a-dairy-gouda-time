@@ -58,7 +58,14 @@ plot(pressure)
 
 ## Where should we operate?
 
-Kassidy introduces her dataset
+Introducing the milk produced by state from 1970 to 2017.
+
+This dataset includes 2400 rows with the variables:
+
+-Region
+-State
+-Year
+-Milk Produced
 
 ## Kassidy Plot
 
