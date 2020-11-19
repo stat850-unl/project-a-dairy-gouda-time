@@ -82,7 +82,7 @@ make this product and make mad money yo
 
 Becca introduce dataset/scrape methods
 
-## Worldcloud Plot
+## Wordcloud Plot
 
 ```{r, include=FALSE}
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
@@ -181,16 +181,15 @@ words <- sort(rowSums(matrix),decreasing=TRUE)
 wordclouddf <- data.frame(word = names(words),freq=words)
 
 
-set.seed(5658) # for reproducibility 
-wordplot<-wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
-
 library(ggplot2)
 recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
 
 ```
 
-```{r wordplot, echo=FALSE}
-wordplot
+```{r wordplot, echo=FALSE, warning=FALSE}
+set.seed(5658) # for reproducibility 
+wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
+#purple and orange to be color friendly
 ```
 ## Monthly Occurances - Major Outbreak Plot
 ```{r recallplot, echo=FALSE}
