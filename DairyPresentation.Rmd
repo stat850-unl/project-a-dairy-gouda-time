@@ -79,8 +79,10 @@ Sam introduces her dataset
 make this product and make mad money yo
 
 ## What should the producer look out for?
-
 In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites. 
+
+<iframe src="http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14" width="900" height="200" style="border: none;"></iframe>
+
 
 ## FDA Dataset
 1914 entries once all years are merged. 
@@ -196,6 +198,7 @@ library(ggplot2)
 recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
 
 ```
+
 
 ## Dataset is a little ambiguous...
 For example, one entry was listed as Whole Foods, instead of a product category, so I decided to rely on filtering I performed instead. 
