@@ -18,20 +18,21 @@ Our team has been approached by a business person who happens to love dairy prod
 
 ## HOLY COW
 
-make cow pic graphic and put here Becca okay
 
 There is a lot to consider! Maybe exploratory analysis can help!
 
-```{r cars, echo = TRUE}
+```{r cows, echo = FALSE, warning=FALSE, message=FALSE}
 library(magick)
 library(magrittr)
 library(purrr)
 
-list.files("Cow Pics PNG", pattern = '*.png', full.names = TRUE) %>% 
+cowsgif<-list.files("Cow Pics PNG", pattern = '*.png', full.names = TRUE) %>% 
         image_read() %>% 
         image_join() %>% 
-        image_animate(fps=2) %>% 
-        image_write(cows, "cows.gif") 
+        image_scale("x300")%>%
+        image_animate(fps=2) 
+
+cowsgif
 ```
 
 ## Questions to Answer 
