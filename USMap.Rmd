@@ -39,7 +39,10 @@ dairybystate[2248,]
 ```
 
 Of course it is CA...and 2014 was a great year for dairy so that isn't surprising at all.
-Filter said data for future use
+
+I obviously can't plot every year, and with a range this large, the continuous fill scale would be so broad that it wouldn't accurately depict the data. So, we have to break this down. 
+
+Filtering the data down to some "key" years for map making. 
 ```{r}
 library(tidyverse)
 dairy70 <- dairybystate %>% filter(year == 1970)
@@ -50,13 +53,34 @@ dairy10 <- dairybystate %>% filter(year == 2010)
 dairy17 <- dairybystate %>% filter(year == 2017)
 ```
 
+Now to find the ranges of these years. 
 ```{r}
 range(dairy70$milk_produced)
-
 ```
 ```{r}
 range(dairy80$milk_produced)
 ```
+
+```{r}
+range(dairy90$milk_produced)
+```
+
+```{r}
+range(dairy00$milk_produced)
+```
+
+```{r}
+range(dairy10$milk_produced)
+```
+
+```{r}
+range(dairy17$milk_produced)
+```
+
+So it looks like our minimum value is 3,000,000 and our maximum value is 40,385,000,000. 
+Well, that didn't help much, but logically, we can eliminate the lower bounds because we aren't interested in these small states with limited supply, we want the milk. 
+
+After "playing" with the data a bit, I decided on a range of 2,500,000,000 to 30,000,000,000. I left the lower limit at 2,500,000,000 to bring in more states. The year 2010 is what was really throwing the upper limit off. Adjusting the upper limit from 20,000,000,000 to 50,000,000,000 didn't result in any changes in teh states displayed or the colors displayed, so 30,000,000,000 seemed like a decent limit. 
 
 ## Where Kassidy's eyes were bigger than her plate: 
 
@@ -67,11 +91,13 @@ range(dairy80$milk_produced)
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(0, 45000000000)) +
+usa70 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state from in 1970") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa70
 ```
 
 1980
@@ -79,11 +105,13 @@ plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color =
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy80, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+usa80 <- plot_usmap(regions = "states", data = dairy80, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state in 1980") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa80
 ```
 
 1990
@@ -91,11 +119,13 @@ plot_usmap(regions = "states", data = dairy80, values = "milk_produced", color =
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy90, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+usa90 <- plot_usmap(regions = "states", data = dairy90, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state in 1990") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa90
 ```
 
 2000
@@ -103,11 +133,13 @@ plot_usmap(regions = "states", data = dairy90, values = "milk_produced", color =
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+usa00 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state in 2000") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa00
 ```
 
 2010
@@ -115,11 +147,13 @@ plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color =
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+usa10 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state in 2010") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa10
 ```
 
 2017
@@ -127,9 +161,37 @@ plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color =
 library(usmap)
 library(ggplot2)
 
-plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
-  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(5000000000, 10000000000, 15000000000, 20000000000, 25000000000, 30000000000, 35000000000, 40000000000), limits = c(0, 45000000000)) +
+usa17 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
   labs(title = "Dairy Production in the United States",
        subtitle = "Changes in dairy produciton by state in 2017") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa17
 ```
+
+let's try and animate this...because that would just be cool
+
+Here we have the whole data set...no select years like above()
+```{r}
+library(usmap)
+library(ggplot2)
+
+usa <- plot_usmap(regions = "states", data = dairybystate, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(type = "viridis", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 30000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2017") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usa
+```
+
+```{r}
+library(gganimate)
+theme_set(theme_bw())
+library(gapminder)
+
+usa + transition_time(year) +
+  labs(title = "Year")
+```
+
