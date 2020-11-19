@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 First of all...the FDA makes getting their data somewhat irritating to me (as in it does not come in comma-separated values). XML scrape it is! I procured data from the last 5 years.
-```{r, include=FALSE}
+```{r, echo=TRUE, results='hide'}
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
 FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
 FDA1<-read.csv("FDA.csv", skip = 1)
@@ -39,6 +39,10 @@ front<-gsub("^.....","",FDAoldtabl$FDAoldtbl)
 back<-gsub('.{1}$','', front)
 OldJoin<-back %>% map(readHTMLTable)
 
+```
+
+```{r, include=FALSE}
+#Okay, I konw this is bad. I just got tired and brute forced everything together.
 Old<-rbind(OldJoin[[1]][["NULL"]],OldJoin[[2]][["NULL"]],OldJoin[[3]][["NULL"]],OldJoin[[4]][["NULL"]],OldJoin[[5]][["NULL"]],OldJoin[[6]][["NULL"]],OldJoin[[7]][["NULL"]],OldJoin[[8]][["NULL"]],OldJoin[[9]][["NULL"]],OldJoin[[10]][["NULL"]],OldJoin[[11]][["NULL"]],OldJoin[[12]][["NULL"]],OldJoin[[13]][["NULL"]],OldJoin[[14]][["NULL"]],OldJoin[[15]][["NULL"]],OldJoin[[16]][["NULL"]],OldJoin[[17]][["NULL"]],OldJoin[[18]][["NULL"]],OldJoin[[19]][["NULL"]],OldJoin[[20]][["NULL"]],OldJoin[[21]][["NULL"]],OldJoin[[22]][["NULL"]],OldJoin[[23]][["NULL"]],OldJoin[[24]][["NULL"]],OldJoin[[25]][["NULL"]],OldJoin[[26]][["NULL"]],OldJoin[[27]][["NULL"]],OldJoin[[28]][["NULL"]],OldJoin[[29]][["NULL"]],OldJoin[[30]][["NULL"]],OldJoin[[31]][["NULL"]],OldJoin[[32]][["NULL"]])
 Old<-as.data.frame(Old)
 
@@ -61,7 +65,7 @@ FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
 ```
 
 I had to find a good list of dairy products that would be current and appropriate. The federal register has a list for U.S. specific items, but I wanted a broader worldview. Wikipedia has lists of dairy products and cheeses, so I figured if I extracted the items from the pages, I could use these to search the FDA database. Also, I just wanted to try scraping html tables. 
-```{r wikipedia, include=FALSE}
+```{r wikipedia, echo=TRUE, results='hide'}
 library(purrr)
 library(htmltab)
 library(tidyr)
@@ -81,7 +85,7 @@ dairy<-c(dairy1,dairy2)
 
 
 Then the filtering nightmare. "So" pulled soybean so I had to pull that out, and "butter" gave an inevitable "Nut butter" problem that had to be negated. 
-```{r FDA filter, include=FALSE}
+```{r FDA filter, echo=TRUE, results='hide'}
 library(stringr)
 library(dplyr)
 
@@ -130,18 +134,22 @@ wordclouddf <- data.frame(word = names(words),freq=words)
 set.seed(5658) # for reproducibility 
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
+
 ```
-From the world cloud we can see that "undeclared" and "*Listeria*" are of high occurance. Unldeclared is a term associated with the inclusion of unlabeled allergens. Production must be sure to label allergens if they are in product, and shifts must occur with allergen containing products at the end to avoid contamination of products that to not contain them. *Listeria* is of high concern, as this pathogen is potentially fatal. It can produce biofilms, sticky polysaccharides that allow it to adhere to processing surfaces if sanitation is not adequate.  
+
+
+From the wordcloud we can see that "undeclared" and "*Listeria*" are of high occurance. Unldeclared is a term associated with the inclusion of unlabeled allergens. Production must be sure to label allergens if they are in product, and shifts must occur with allergen containing products at the end to avoid contamination of products that to not contain them. *Listeria* is of high concern, as this pathogen is potentially fatal. It can produce biofilms, sticky polysaccharides that allow it to adhere to processing surfaces if sanitation is not adequate.  
 
 I was curious if there were particular times of year to worry about *Listeria*; *E.coli* is a mesophile, meaning it likes body temperature for growth, so we generally see its recalls peak during the summer. *Listeria*, on the other hand, is a psychrophile, or a "cold-lover". Becuase it grows at refrigeration temperatures, and cheese is generally kept in a cold chain, I was not expecting to see peak months. However, February jumped out.
 ```{r, echo=FALSE}
 library(ggplot2)
-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
+recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
+recallplot
 ```
 
 I decided to investigate further as to what went wrong this month, and saw multiple retailers (Meijer, Sargento) associated with *Listeria* in cheese from the 10th through the 28th of February, 2017. I thought this could be an outbreak related to a copacking distributor. Often, commercial retailers or large brands will have separate facilities assist in manufacturing product for their brand to broaden the supply chain. 
 ```{r, echo=FALSE}
-febtable<-DairySet %>% filter(month == "2") %>% select("Date","Product.Description","Recall.Reason.Description","Company.Name")
+febtable<-DairySet %>% filter(month == "Feb") %>% select("Date","Product.Description","Recall.Reason.Description","Company.Name")
 library(DT)
 DT::datatable(febtable)
 ```
