@@ -60,16 +60,118 @@ plot(pressure)
 
 Introducing the milk produced by state from 1970 to 2017.
 
-This dataset includes 2400 rows with the variables:
+This data set includes 2400 rows with the variables:
 
--Region
--State
--Year
--Milk Produced
+- Region
+- State
+- Year
+- Milk Produced
 
-## Kassidy Plot
+## Digging into the data
 
-hooray U.S.A.
+
+```{r, include = FALSE}
+# Silent Chunk! Say hello to the data!
+urlfile <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/state_milk_production.csv"
+dairycsv <- read.csv(urlfile)
+dairybystate <- as.data.frame(dairycsv)
+```
+
+First we need to explore a little.
+```{r, echo = TRUE}
+which.min(dairybystate$milk_produced)
+which.max(dairybystate$milk_produced)
+```
+
+```{r, echo = FALSE}
+dairybystate[2199,]
+```
+
+```{r, echo = FALSE}
+dairybystate[2248,]
+```
+
+Upon further exploration, you can see that our range is from 3,000,000 to 42,339,000,000. Yikes, that's large
+
+
+## My country tis of thee, sweet land of milk and cheese
+```{r, include = FALSE}
+# Another silent chunk! Here comes big fun!
+
+library(usmap)
+library(ggplot2)
+library(tidyverse)
+
+dairy70 <- dairybystate %>% filter(year == 1970)
+dairy80 <- dairybystate %>% filter(year == 1980)
+dairy90 <- dairybystate %>% filter(year == 1990)
+dairy00 <- dairybystate %>% filter(year == 2000)
+dairy10 <- dairybystate %>% filter(year == 2010)
+dairy17 <- dairybystate %>% filter(year == 2017)
+
+usa70 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 1970") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa70.png", plot=usa70,width=4,height=4,units="in",scale=1)
+usa70pic <- image_read("usa70.png")
+
+usa80 <- plot_usmap(regions = "states", data = dairy80, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 1980") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa80.png", plot=usa80,width=4,height=4,units="in",scale=1)
+usa80pic <- image_read("usa80.png")
+
+usa90 <- plot_usmap(regions = "states", data = dairy90, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 1990") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa90.png", plot=usa90,width=4,height=4,units="in",scale=1)
+usa90pic <- image_read("usa90.png")
+
+usa00 <- plot_usmap(regions = "states", data = dairy00, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2000") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa00.png", plot=usa00,width=4,height=4,units="in",scale=1)
+usa00pic <- image_read("usa00.png")
+
+usa10 <- plot_usmap(regions = "states", data = dairy10, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2010") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa10.png", plot=usa10,width=4,height=4,units="in",scale=1)
+usa10pic <- image_read("usa10.png")
+
+usa17 <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+  scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
+  labs(title = "Dairy Production in the United States",
+       subtitle = "Changes in dairy produciton by state in 2017") + 
+  theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+ggsave(filename = "usa17.png", plot=usa17,width=4,height=4,units="in",scale=1)
+usa17pic <- image_read("usa17.png")
+
+image <- c(usa70pic, usa80pic, usa90pic, usa00pic, usa10pic, usa17pic)
+
+image_append(image_scale(image, "x200"))
+
+animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
+```
+```{r, echo = FALSE}
+animatedmap
+```
 
 ## Kassidy recommendations
 
