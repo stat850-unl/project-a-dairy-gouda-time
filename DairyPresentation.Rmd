@@ -198,11 +198,20 @@ recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat
 ```
 
 ## Dataset is a little ambiguous...
-For example, one entry was listed as Whole Foods, instead of a product category, so I decided to reply on filtering I performed instead. I scraped the names of dairy products listed in an HTML table on wikipedia to filter the dataset. 
+For example, one entry was listed as Whole Foods, instead of a product category, so I decided to rely on filtering I performed instead. 
 
-```{r FDA, echo=FALSE}
+```{r FDA, echo=FALSE, warning=FALSE, message=FALSE}
 library(dplyr)
-FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
+library(printr)
+wholefoods<-FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
+head(wholefoods)
+```
+
+## Wikipedia scrape
+I scraped the names of dairy products and cheese listed in an HTML table on wikipedia to filter the dataset. 
+```{r, echo=FALSE}
+
+
 ```
 
 ## Wordcloud Plot
@@ -211,6 +220,7 @@ set.seed(5658) # for reproducibility
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
 #purple and orange to be color friendly
 ```
+
 ## Monthly Occurances - Major Outbreak Plot
 ```{r recallplot, echo=FALSE}
 recallplot
