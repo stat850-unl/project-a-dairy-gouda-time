@@ -22,6 +22,18 @@ make cow pic graphic and put here Becca okay
 
 There is a lot to consider! Maybe exploratory analysis can help!
 
+```{r cars, echo = TRUE}
+library(magick)
+library(magrittr)
+library(purrr)
+
+list.files("Cow Pics PNG", pattern = '*.png', full.names = TRUE) %>% 
+        image_read() %>% 
+        image_join() %>% 
+        image_animate(fps=2) %>% 
+        image_write(cows, "cows.gif") 
+```
+
 ## Questions to Answer 
 
 - Where is the best place in the United States to run a dairy operation?
