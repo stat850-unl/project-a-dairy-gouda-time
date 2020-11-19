@@ -80,11 +80,22 @@ make this product and make mad money yo
 
 ## What should the producer look out for?
 
-Becca introduce dataset/scrape methods
+In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites. 
 
-## Wordcloud Plot
+## FDA Dataset
+1914 entries once all years are merged. 
+Variables include:
+
+- Date (mm/dd/yyyy)
+- Company Name
+- Product Category
+- Product Name
+- Reason for Recall
+
 
 ```{r, include=FALSE}
+#Hello and welcome to by big silent R chunk for reproduciblity's sake. include=FALSE so none of this will be printed, but I need it to make objects below. 
+
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
 FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
 FDA1<-read.csv("FDA.csv", skip = 1)
@@ -186,6 +197,15 @@ recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat
 
 ```
 
+## Dataset is a little ambiguous...
+For example, one entry was listed as Whole Foods, instead of a product category, so I decided to reply on filtering I performed instead. I scraped the names of dairy products listed in an HTML table on wikipedia to filter the dataset. 
+
+```{r FDA, echo=FALSE}
+library(dplyr)
+FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
+```
+
+## Wordcloud Plot
 ```{r wordplot, echo=FALSE, warning=FALSE}
 set.seed(5658) # for reproducibility 
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
