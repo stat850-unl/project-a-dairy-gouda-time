@@ -162,7 +162,7 @@ dairy2<-print(dairy[dairy!="So"])
 matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$Product.Description)
 matchesdairy2<-print(FDA$Product.Description[matchesdairy])
 
-getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut", "Cashew", "Imitation")
+getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut", "Cashew", "Imitation", "Chips", "Cloths")
 
 filtereditems <- grepl(paste(getout, collapse = "|"), matchesdairy2)
 filtereditems2<-print(matchesdairy2[filtereditems==F])
@@ -207,14 +207,48 @@ wholefoods<-FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
 head(wholefoods)
 ```
 
+<style> 
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
 ## Wikipedia scrape
 I scraped the names of dairy products and cheese listed in an HTML table on wikipedia to filter the dataset. 
-```{r, echo=FALSE}
-
+```{r scrollblock, include=FALSE} 
+options(width = 60)
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
 
 ```
 
+```{r, echo=FALSE}
+dairy
+```
+
+## Filter against dataset (and remove non-dairy imitations)
+<style> 
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
+
+
+```{r,echo=FALSE}
+filtereditems2
+```
+
 ## Wordcloud Plot
+
 ```{r wordplot, echo=FALSE, warning=FALSE}
 set.seed(5658) # for reproducibility 
 wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
