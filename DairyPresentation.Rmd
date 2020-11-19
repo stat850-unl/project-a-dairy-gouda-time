@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE)
 Our team has been approached by a business person who happens to love dairy products! They are interested in starting a dairy to live out their childhood dreams, but are not sure where to start. We combed the USDA and FDA data to make recommendations to ensure they get the best dairy possible. 
 </div>
 
-## HOLY COW
+## HOLY COW!
 
 
 There is a lot to consider! Maybe exploratory analysis can help!
@@ -84,7 +84,118 @@ Becca introduce dataset/scrape methods
 
 ## Worldcloud Plot
 
+```{r, include=FALSE}
+#2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
+FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
+FDA1<-read.csv("FDA.csv", skip = 1)
+
+library(XML)
+library(dplyr)
+library(purrr)
+#Archived 2017 has 14 pages
+FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
+#Archived 2016 has 18 pages
+FDA2016site = 'http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=17'
+
+tbls_xml <- readHTMLTable(FDA2017site)
+
+tbls16<-capture.output(for (i in 1:14){
+  print(paste0('http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=',i,''))
+})
+
+tbls17<-capture.output(for (i in 1:18){
+  (print(paste0('http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=',i,'')))
+})
+
+FDAoldtbl<-c(tbls16,tbls17)
+FDAoldtabl<-as.data.frame(FDAoldtbl)
+front<-gsub("^.....","",FDAoldtabl$FDAoldtbl)
+back<-gsub('.{1}$','', front)
+OldJoin<-back %>% map(readHTMLTable)
+
+Old<-rbind(OldJoin[[1]][["NULL"]],OldJoin[[2]][["NULL"]],OldJoin[[3]][["NULL"]],OldJoin[[4]][["NULL"]],OldJoin[[5]][["NULL"]],OldJoin[[6]][["NULL"]],OldJoin[[7]][["NULL"]],OldJoin[[8]][["NULL"]],OldJoin[[9]][["NULL"]],OldJoin[[10]][["NULL"]],OldJoin[[11]][["NULL"]],OldJoin[[12]][["NULL"]],OldJoin[[13]][["NULL"]],OldJoin[[14]][["NULL"]],OldJoin[[15]][["NULL"]],OldJoin[[16]][["NULL"]],OldJoin[[17]][["NULL"]],OldJoin[[18]][["NULL"]],OldJoin[[19]][["NULL"]],OldJoin[[20]][["NULL"]],OldJoin[[21]][["NULL"]],OldJoin[[22]][["NULL"]],OldJoin[[23]][["NULL"]],OldJoin[[24]][["NULL"]],OldJoin[[25]][["NULL"]],OldJoin[[26]][["NULL"]],OldJoin[[27]][["NULL"]],OldJoin[[28]][["NULL"]],OldJoin[[29]][["NULL"]],OldJoin[[30]][["NULL"]],OldJoin[[31]][["NULL"]],OldJoin[[32]][["NULL"]])
+Old<-as.data.frame(Old)
+
+
+Old<-Old %>% select(-" Details/Photo ") 
+FDA1<-FDA1 %>% select(-"Product.Type")
+
+matchnames<-c("Date","Brand.Name.s.","Product.Description","Recall.Reason.Description","Company.Name")
+colnames(Old)<-matchnames
+Old<-as.data.frame(Old)
+FDA1<-as.data.frame(FDA1)
+FDA<-rbind(Old,FDA1)
+
+library(purrr)
+library(htmltab)
+library(tidyr)
+url = 'https://en.wikipedia.org/wiki/List_of_dairy_products'
+url2 = "https://en.wikipedia.org/wiki/List_of_cheeses"
+
+tbls <- map2(url, 1:23, htmltab, rm_nodata_cols =F)
+tblname<-map(tbls, 1)
+dairy1<-unlist(tblname)
+
+tbls2 <- map2(url2, 1:23, htmltab, rm_nodata_cols =F)
+tblname2<-map(tbls2, 1)
+dairy2<-unlist(tblname2)
+
+dairy<-c(dairy1,dairy2)
+
+library(stringr)
+library(dplyr)
+
+dairy
+dairy2<-print(dairy[dairy!="So"])     
+
+matchesdairy <- grepl(paste(dairy2, collapse = "|"), FDA$Product.Description)
+matchesdairy2<-print(FDA$Product.Description[matchesdairy])
+
+getout<-c("Butter nut","Butternut", "Peanut", "Non-Dairy","Butterfly", "Beanit","Panque","Sunflower","Nut", "Cashew", "Imitation")
+
+filtereditems <- grepl(paste(getout, collapse = "|"), matchesdairy2)
+filtereditems2<-print(matchesdairy2[filtereditems==F])
+
+DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
+
+library(lubridate)
+DairySet<-DairySet %>% mutate(Date = mdy(Date))%>%mutate(year = lubridate::year(Date),
+                    month = lubridate::month(Date),
+                    day = lubridate::day(Date))
+DairySet$month<-month.abb[DairySet$month]
+
+library(stringr)
+library(tm)
+library(RColorBrewer)
+library(wordcloud)
+
+nopunct<-gsub('[[:punct:] ]+',' ',DairySet$Recall.Reason.Description)
+nopunct<-trimws(nopunct)
+wordsextract<-str_split(nopunct, " ")
+wordsextract<-unlist(wordsextract)
+
+docs <- Corpus(VectorSource(wordsextract))
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+wordclouddf <- data.frame(word = names(words),freq=words)
+
+
+set.seed(5658) # for reproducibility 
+wordplot<-wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.words=200, random.order=FALSE, rot.per=0.20,colors=brewer.pal(8, "PuOr"))
+
+library(ggplot2)
+recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
+
+```
+
+```{r wordplot, echo=FALSE}
+wordplot
+```
 ## Monthly Occurances - Major Outbreak Plot
+```{r recallplot, echo=FALSE}
+recallplot
+```
 
 ## Becca Recommendations
 
