@@ -1,0 +1,147 @@
+---
+title: "Stat 850 Project Description"
+author: "Rebecca Furbeck, Kassidy Buse, Samantha Teten"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(digits = 3)
+```
+
+```{r load-sas-libraries, echo = F, message = F, warning = F}
+
+saspath <- "/usr/local/SASHome/SASFoundation/9.4/bin/sas_en" # Your SAS path goes here
+sasopts <- "-ls 75"
+knitr::opts_chunk$set(engine.path=list(sas=saspath, saslog=saspath, sashtml=saspath),
+                      engine.opts=list(sas=sasopts, saslog=sasopts, sashtml=sasopts), 
+                      comment=NA)
+library(SASmarkdown)
+```
+
+
+## Data Set
+We are using 2 main entities for data.
+
+The first portion is provided by the USDA ERS:
+https://www.ers.usda.gov/data-products/dairy-data/
+Variables in these datasets (see CSVs below) are mainly numeric, pertaining to production and sales of dairy products. 
+
+The second being the FDA recalls and notices: https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts
+Variables included in this data set are dates, and characters detailing food brand, product description, product type, and recall reason. 
+
+See csv files in repository.
+```{r}
+library(readr)
+library(tidyverse)
+
+ice_cream_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+ice_cream <- read_csv("ice_cream.csv", 
+                       col_names = ice_cream_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+whole_milk_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+whole_milk <- read_csv("whole_milk.csv", 
+                       col_names = whole_milk_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+butter_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+butter <- read_csv("butter.csv", 
+                       col_names = butter_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+cheese_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+cheese <- read_csv("cheese.csv", 
+                       col_names = cheese_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+# dairy_basket_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","","")
+# dairy_basket <- read_csv("dairy_basket.csv",
+#                        col_names = dairy_basket_header,
+#                        col_types = "dddd_", skip = 3) %>%
+#   filter(Year <= 2018) %>%
+#   select(-5)
+
+head(whole_milk)
+NROW(whole_milk)
+
+butter<-butter%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+cheese<-cheese%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+groupfunct<-function(x,name){
+  x<-x%>%
+    mutate(Product=X)
+}
+
+cheese<-cheese%>%
+  mutate(Product="Cheese")
+butter<-butter%>%
+  mutate(Product="Butter")
+ice_cream<-ice_cream%>%
+  mutate(Product="Ice_Cream")
+whole_milk<-whole_milk%>%
+  mutate(Product="Whole_Milk")
+
+AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
+AllProducts
+
+
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape)
+
+average<-AllProducts%>%
+  group_by(Year)%>%
+  ggplot(aes(x=Year, y=FarmShare_Percent)) +
+  geom_line()+
+  geom_point()
+average
+
+ggplot(data=AllProducts, aes(x=Year, y=FarmShare_Percent, group=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()
+
+ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()
+
+
+to_plot <- data.frame(x=AllProducts$Year,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+melted<-melt(to_plot, id="x")
+
+print(ggplot(melted,aes(x=x,y=value,fill=variable)) + geom_bar(stat="identity",alpha=.3))
+```
+
+## Potential Topics to Explore Using the Data Set
+Scenario: We are a team of agricultural scientists who have been contacted by a business group interested in starting a dairy products creamery operation. They are looking to learn 
+
+We intend to learn:
+What in the world in happening in 2020 with milk prices? 
+What location should we processed in? (Investigate which states are excelling in milk production to have a supply chain)
+What products should we make? (Investigate the sales of products over time)
+What difficulties could arise or things should we be aware of? (FDA Recalls)
+
+## Group Members
+Samantha Teten
+Kassidy Buse
+Becca Furbeck
+
+## Stuff to look at
+- map of change in milk prod for each state (US Map) from 1970 to 2014
+-change in milk production from 1970 to 2014 for top 3 states
+-spread of farm price from retail price over time
+-Reasons for recalls of dairy products
