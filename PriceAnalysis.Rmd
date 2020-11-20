@@ -63,12 +63,11 @@ cheese <- read_csv("cheese.csv",
   filter(Year <= 2018) %>%
   select(-4)
 
-# dairy_basket_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","","")
-# dairy_basket <- read_csv("dairy_basket.csv",
-#                        col_names = dairy_basket_header,
-#                        col_types = "dddd_", skip = 3) %>%
-#   filter(Year <= 2018) %>%
-#   select(-5)
+consupt_header<-c("Year","Fluid","Cheese","Butter","RegularIceCream","LowFatIceCream")
+pcconsp <- read_csv("pcconsp.csv", 
+                       col_names = consupt_header, 
+                       col_types = "dddddd", skip = 6) %>%
+  filter(Year <= 2019)
 
 head(whole_milk)
 NROW(whole_milk)
@@ -104,26 +103,47 @@ AllProducts
 library(ggplot2)
 library(reshape)
 
-average<-AllProducts%>%
-  group_by(Year)%>%
-  ggplot(aes(x=Year, y=FarmShare_Percent)) +
-  geom_line()+
-  geom_point()
-average
-
-ggplot(data=AllProducts, aes(x=Year, y=FarmShare_Percent, group=Product)) +
+ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
-  geom_point()
+  geom_point()+
+  geom_smooth(method=lm, se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
 
-ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product)) +
-  geom_line(aes(color=Product))+
-  geom_point()
-
-
-to_plot <- data.frame(x=AllProducts$Year,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
 melted<-melt(to_plot, id="x")
+ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
+  geom_bar(stat="identity",position = "identity")+
+  scale_fill_brewer(type='seq',palette='PuOr')+
+  labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
+  
 
-print(ggplot(melted,aes(x=x,y=value,fill=variable)) + geom_bar(stat="identity",alpha=.3))
+
+ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm, se= FALSE)+
+  scale_color_brewer(type='seq',palette='PuOr')
+
+ggplot(data=AllProducts, aes(x=Year, y=FarmShare_Percent, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm, se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
+
+AllProducts %>%
+  mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
+  ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
+    geom_boxplot() +
+    xlab("Product") +
+    theme(legend.position="none") +
+    xlab("")+
+  scale_fill_brewer(type='seq',palette='PuOr')
+
+# to_plot <- data.frame(x=AllProducts$Year,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+# melted<-melt(to_plot, id="x")
+# 
+# print(ggplot(melted,aes(x=x,y=value,fill=variable)) + geom_bar(stat="identity",position = "identity",alpha=.3))
+
 ```
 
 ## Potential Topics to Explore Using the Data Set
