@@ -177,9 +177,10 @@ animatedmap
 
 put your farm in a state where you can make money yo
 
-## What Products should we make?
+## What Products Should You Make?
 
-```{r, include=false}
+USDA Dairy Data for Products
+```{r, include=FALSE}
 library(readr)
 library(tidyverse)
 
@@ -241,48 +242,57 @@ whole_milk<-whole_milk%>%
   mutate(Product="Whole_Milk")
 
 AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
-AllProducts
-
-
+```
+```{r, echo=FALSE}
+head(AllProducts)
 ```
 
-Sam introduces her dataset
 
-## Sam Plot
-
-```{r, echo=false}
-library(ggplot2)
-library(reshape)
-
-ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
+## Retail Prices Over Time
+```{r, include=FALSE}
+retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
   geom_point()+
-  geom_smooth(method=lm, se= FALSE)+
-  scale_color_brewer(type='div',palette='PuOr')
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='seq',palette='PuOr')
+```
+```{r, echo=FALSE}
+retail
 ```
 
-## Plot2
-```{r, echo=false}
+## Farm Value of Products Over Time
+
+```{r, include=FALSE}
+library(ggplot2)
+library(reshape)
+library(gganimate)
+
+farmvalue<-ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
+```
+```{r, echo=FALSE}
+farmvalue
+```
+
+## Farm Value Compared to Retail Price
+```{r, include=FALSE}
 to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
 melted<-melt(to_plot, id="x")
-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
+share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
   geom_bar(stat="identity",position = "identity")+
   scale_fill_brewer(type='seq',palette='PuOr')+
   labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
 ```
-
-## Plot3
-```{r, echo=false}
-ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
-  geom_line(aes(color=Product))+
-  geom_point()+
-  geom_smooth(method=lm, se= FALSE)+
-  scale_color_brewer(type='seq',palette='PuOr')
+```{r,echo=FALSE}
+share
 ```
 
-## Plot4
-```{r, echo=false}
-AllProducts %>%
+## Farm Share Percentage by Product
+```{r, include=FALSE}
+productcomp<- AllProducts %>%
   mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
   ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
     geom_boxplot() +
@@ -291,9 +301,40 @@ AllProducts %>%
     xlab("")+
   scale_fill_brewer(type='seq',palette='PuOr')
 ```
-## Sam Recommendations
+```{r, echo=FALSE}
+productcomp
+```
 
-make this product and make mad money yo
+
+## Dairy Consumption in the U.S.
+{r,include=FALSE}
+
+colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
+ggplot(data=pcconsp, aes(x=Year))+
+  geom_line(aes(y=Fluid/10,color="Fluid"), size = 2)+
+  geom_line(aes(y=Cheese,color="Cheese"), size =2)+
+  geom_line(aes(y=Butter,color="Butter"), size = 2)+
+  geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
+  geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
+  labs(title="Diary Product Consumption Per Capita", x = "Year",
+      y = "Consumption (lbs), 
+      Fluid is in tens of pounds",
+      color = "Legend")  +
+  scale_color_manual(values = colors)+
+  transition_reveal(Year)
+
+consumption<-anim_save("DairyConsumption")
+
+
+{r,echo=FALSE}
+consumption
+
+
+## Product Recommendations
+
+- Get a contract with Kwik Twip to sell milk and butter
+- Make your own specialty cheese and ice cream to sell online or store front
+- Hire Becca to pair your cheeses with meat
 
 ## What should the producer look out for?
 In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites. 
