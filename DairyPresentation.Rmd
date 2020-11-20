@@ -201,8 +201,8 @@ Overall recommendation: Southcentral Wisconsin
 
 Data:
 USDA Dairy Data for Products
-- 18 years of average retail price and farm value
-- Each product has its own 18 x 4 table
+* 18 years of average retail price and farm value
+* Each product has its own 18 x 4 table
 
 USDA Dairy Product Consumption
 - 45 years of dairy consumption per capita divided by products 
@@ -356,7 +356,7 @@ ggplot(data=pcconsp, aes(x=Year))+
 
 ## Product Recommendations
 
-- Get a contract with Kwik Twip to sell milk and butter
+- Get a contract with Kwik Trip to sell milk and butter
 - Make your own specialty cheese and ice cream to sell online or store front
 - Hire Becca to pair your cheeses with meat in charcuterie board / snacking application
 
@@ -557,6 +557,10 @@ recallplot
 ![Image from Hiperbaric](listeria.jpg) </center>
 
 
+## Summary
 
+- Wisconsin is the place to be!
+- Make cheese and ice-cream, sell milk and butter at retailer
+- Employ preventative measures against *Listeria*
 
 
