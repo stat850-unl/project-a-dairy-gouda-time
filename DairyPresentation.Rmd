@@ -154,7 +154,7 @@ image_append(image_scale(image, "x200"))
 animatedmap <- image_animate(image_scale(image, "700x700"), fps = 1, dispose = "previous")
 ```
 
-```{r map, echo=FALSE, out.height= '50%', fig.align='center'}
+```{r map, echo=FALSE, out.width= '50%', fig.align='center'}
 animatedmap
 ```
 
