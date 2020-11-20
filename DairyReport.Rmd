@@ -171,6 +171,7 @@ dairytop3 = dairytop %>%
   geom_point() +
   scale_color_manual(values = c("purple", "magenta", "orange"))
 ```
+<<<<<<< HEAD
 ```{r}
 dairytop3
 ```
@@ -188,3 +189,179 @@ As I mentioned above, there are other factors to consider when deciding on a loc
 Taking all these factors into consideration, Wisconsin would be the best choice. The hurdles of land cost and environmental regulations in New York and California are too much for a fledgling business. The competition in Wisconsin is *possible* to overcome. First off, people flock to Wisconsin for mostly one reason. No, it is not Wisconsin Dells, but in fact, cheese. Between local and tourist/visiting customers, there will still be demand for good, high-quality cheese. Second, we are now in an era that is ruled by online shopping. By also running an online store-front, we can earn revenue through web-based purchases. Lastly, it is much easier to ship cold and refrigerated products than in past years. It would be easy to contract with local and national food chains, gas stations, and grocery stores to distribute our product. For both of these last reasons, the more central (albeit northern) location of Wisconsin gives it an advantage over its coastal competitors. 
 
 
+=======
+
+## Profitable Products 
+
+Intro goes here
+
+### Introducing the Data
+
+We are using 2 main entities for data.
+
+The first portion is provided by the USDA ERS:
+https://www.ers.usda.gov/data-products/dairy-data/
+Variables in these datasets (see CSVs below) are mainly numeric, pertaining to production and sales of dairy products. 
+
+### Data Manipulation and Cleaning
+```{r}
+library(readr)
+library(tidyverse)
+
+ice_cream_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+ice_cream <- read_csv("ice_cream.csv", 
+                       col_names = ice_cream_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+whole_milk_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+whole_milk <- read_csv("whole_milk.csv", 
+                       col_names = whole_milk_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+butter_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+butter <- read_csv("butter.csv", 
+                       col_names = butter_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+cheese_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+cheese <- read_csv("cheese.csv", 
+                       col_names = cheese_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+consupt_header<-c("Year","Fluid","Cheese","Butter","RegularIceCream","LowFatIceCream")
+pcconsp <- read_csv("pcconsp.csv", 
+                       col_names = consupt_header, 
+                       col_types = "dddddd", skip = 6) %>%
+  filter(Year <= 2019)
+
+head(whole_milk)
+NROW(whole_milk)
+
+butter<-butter%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+cheese<-cheese%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+groupfunct<-function(x,name){
+  x<-x%>%
+    mutate(Product=X)
+}
+
+cheese<-cheese%>%
+  mutate(Product="Cheese")
+butter<-butter%>%
+  mutate(Product="Butter")
+ice_cream<-ice_cream%>%
+  mutate(Product="Ice_Cream")
+whole_milk<-whole_milk%>%
+  mutate(Product="Whole_Milk")
+
+AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
+AllProducts
+
+
+```
+
+### Data Exploration
+#### Retail Prices
+```{r prices, include=FALSE}
+retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='seq',palette='PuOr')
+```
+```{r retailplot, echo=FALSE}
+retail
+```
+
+#### Farm Value
+
+```{r farmvaluesilent, include=FALSE}
+library(ggplot2)
+library(reshape)
+library(gganimate)
+
+farmvalue<-ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
+```
+```{r farmvalue, echo=FALSE}
+farmvalue
+```
+
+
+#### Farm Share
+
+```{r farmsilent, include=FALSE}
+to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+melted<-melt(to_plot, id="x")
+share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
+  geom_bar(stat="identity",position = "identity")+
+  scale_fill_brewer(type='seq',palette='PuOr')+
+  labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
+```
+```{r shareplot,echo=FALSE}
+share
+```
+
+### Farm Share Percentage by Product
+```{r productsilent, include=FALSE}
+productcomp<- AllProducts %>%
+  mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
+  ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
+    geom_boxplot() +
+    xlab("Product") +
+    theme(legend.position="none") +
+    xlab("")+
+  scale_fill_brewer(type='seq',palette='PuOr')
+```
+```{r productplot, echo=FALSE}
+productcomp
+```
+
+#### Dairy Consumption Per Capita
+
+```{r consumptionsilent,include=FALSE}
+
+colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
+ggplot(data=pcconsp, aes(x=Year))+
+  geom_line(aes(y=Fluid/10,color="Fluid"), size = 2)+
+  geom_line(aes(y=Cheese,color="Cheese"), size =2)+
+  geom_line(aes(y=Butter,color="Butter"), size = 2)+
+  geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
+  geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
+  labs(title="Diary Product Consumption Per Capita", x = "Year",
+      y = "Consumption (lbs), 
+      Fluid is in tens of pounds",
+      color = "Legend")  +
+  scale_color_manual(values = colors)+
+  transition_reveal(Year)
+
+consumption<-anim_save("DairyConsumption")
+```
+![ ](ConsumptionGraph.gif)
+
+## Product Recommendations
+
+- Get a contract with Kwik Trip to sell milk and butter
+- Make your own specialty cheese and ice cream to sell online or store front
+- Hire Becca to pair your cheeses with meat in charcuterie board / snacking application
+
+```{r cheesepic, echo=FALSE,out.width = '25%'}
+knitr::include_graphics("cheesepic.jpg")
+```
+
+### Conclusions
+>>>>>>> 6d7ad3706f2879f7e50b2ff92c8e18f7c111d420
