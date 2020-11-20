@@ -77,7 +77,8 @@ dairybystate[2199,]
 dairybystate[2248,]
 ```
 
-## My country tis of thee, sweet land of milk and cheese
+## My country tis of thee...
+Sweet land of milk and cheese
 ```{r silentmap, include = FALSE}
 # Another silent chunk! Here comes big fun!
 
@@ -152,7 +153,7 @@ image_append(image_scale(image, "x200"))
 
 animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
 ```
-```{r map, echo=FALSE, out.width= '50%'}
+```{r map, echo=FALSE, out.width= '70%', fig.align='center'}
 animatedmap
 ```
 
