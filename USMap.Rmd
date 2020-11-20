@@ -191,3 +191,23 @@ dairygif <- image_write(animatedmap, "usadairy.gif")
 animatedmap
 ```
 
+```{r}
+library(ggplot2)
+library(gganimate)
+library(hrbrthemes)
+
+dairytotal <- dairybystate %>% 
+  filter(state %in% c("California", "Wisconsin", "New York"))
+
+dairytotal %>% 
+  ggplot(aes(x = year, y = milk_produced, group = state, color = state)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("purple", "orange", "pink")) +
+  ggtitle("Milk production from 1970 to 2017 of the top 3 producing states") +
+  theme_ipsum() +
+  ylab("Milk Produced") +
+  transition_reveal(year)
+
+anim_save("top3dairy.gif")
+```
