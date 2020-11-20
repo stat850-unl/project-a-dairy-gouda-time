@@ -183,6 +183,8 @@ image <- c(usa70pic, usa80pic, usa90pic, usa00pic, usa10pic, usa17pic)
 
 image_append(image_scale(image, "x200"))
 ```
+
+AND WE MAKE A FREAKING COOL MAP!
 ```{r}
 
 animatedmap <- image_animate(image_scale(image, "400x400"), fps = 1, dispose = "previous")
@@ -191,6 +193,7 @@ dairygif <- image_write(animatedmap, "usadairy.gif")
 animatedmap
 ```
 
+Now to look at the big 3 in a more *intense* fashion
 ```{r}
 library(ggplot2)
 library(gganimate)
