@@ -113,13 +113,33 @@ Well, that didn't help much, but logically, we can eliminate the lower bounds be
 
 ###### Creating the map
 
-```{r}
+```{r, include = FALSE}
 library(usmap)
 library(ggplot2)
+library(maps)
 
-usa <- plot_usmap(regions = "states", data = dairy70, values = "milk_produced", color = "black") + 
+usa <- plot_usmap(regions = "states", data = dairymile, values = "milk_produced", color = "black") + 
   scale_fill_continuous(low = "purple", high = "orange", name = "Production, lb", label = scales::comma, breaks = c(10000000000, 20000000000, 30000000000, 40000000000), limits = c(2500000000, 45000000000)) +
-  labs(title = "Dairy Production in the United States",
-       subtitle = "Changes in dairy produciton by state in 1970") + 
+  labs(title = "Dairy Production in the United States") + 
   theme(panel.background = element_rect(color = "black", fill = "white"), legend.position = "right")
+
+usadairy = usa + facet_wrap(~ year, ncol = 3) +
+    theme(legend.position = "right",
+          strip.background = element_blank()) +
+    labs(fill = "Milk Produced, lb",
+         title = "Milk produced by state from 1970 to 2017")
+```
+
+```{r, echo = FALSE}
+usadairy
+```
+As you can see, the clear winners here are Wisconsin and California. Number 3 is up for debate. It seems that our contenders are Texas, Minnesota, Iowa, Michigan, Ohio, Pennsylvania, and New York. This is a bit easier to work with.
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, out.width='80%'}
+library(ggplot2)
+library(hrbrthemes)
+
+dairycontest <- dairybystate %>% 
+  filter(state %in% c("Texas", "Minnesota", "Iowa", "Michigan", "Ohio", "Pennsylvania", "New York"))
+
 ```
