@@ -202,7 +202,7 @@ library(hrbrthemes)
 dairytotal <- dairybystate %>% 
   filter(state %in% c("California", "Wisconsin", "New York"))
 
-d = dairytotal %>% 
+top3dairy = dairytotal %>% 
   ggplot(aes(x = year, y = milk_produced, group = state, color = state)) +
   geom_line() +
   geom_point() +
@@ -216,5 +216,5 @@ anim_save("top3dairy.gif")
 ```
 
 ```{r}
-d
+top3dairy
 ```
