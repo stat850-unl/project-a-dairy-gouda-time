@@ -138,14 +138,18 @@ AllProducts %>%
     xlab("")+
   scale_fill_brewer(type='seq',palette='PuOr')
 
-
+colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
 ggplot(data=pcconsp, aes(x=Year))+
-  geom_line(aes(y=Fluid/10),color='mediumorchid4')+
-  geom_line(aes(y=Cheese),color='mediumorchid')+
-  geom_line(aes(y=Butter),color='magenta')+
-  geom_line(aes(y=RegularIceCream),color='sienna1')+
-  geom_line(aes(y=LowFatIceCream),color='sienna3')+
-  scale_color_brewer(type='seq',palette='PuOr')+
+  geom_line(aes(y=Fluid/10,color="Fluid"), size = 2)+
+  geom_line(aes(y=Cheese,color="Cheese"), size =2)+
+  geom_line(aes(y=Butter,color="Butter"), size = 2)+
+  geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
+  geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
+  labs(title="Diary Product Consumption Per Capita", x = "Year",
+      y = "Consumption (lbs), 
+      Fluid is in tens of pounds",
+      color = "Legend")  +
+  scale_color_manual(values = colors)+
   transition_reveal(Year)
 
 anim_save("DairyConsumption")
