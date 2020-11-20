@@ -180,7 +180,7 @@ top3dairy = dairytotal %>%
   transition_reveal(year)
 ```
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center',out.width='50%'}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center',out.width='70%'}
 top3dairy
 ```
 
@@ -491,7 +491,7 @@ For example, one entry was listed as Whole Foods, instead of a product category,
 ```{r FDA, echo=FALSE, warning=FALSE, message=FALSE}
 library(dplyr)
 library(printr)
-wholefoods<-FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market")
+wholefoods<-FDA %>% filter(Product.Description=="8-20-2020, Whole Foods Market") %>% select(-Company.Name)
 head(wholefoods)
 ```
 
