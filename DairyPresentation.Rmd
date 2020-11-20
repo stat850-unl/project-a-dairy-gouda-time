@@ -250,6 +250,47 @@ Sam introduces her dataset
 
 ## Sam Plot
 
+```{r, echo=false}
+library(ggplot2)
+library(reshape)
+
+ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm, se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
+```
+
+## Plot2
+```{r, echo=false}
+to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+melted<-melt(to_plot, id="x")
+ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
+  geom_bar(stat="identity",position = "identity")+
+  scale_fill_brewer(type='seq',palette='PuOr')+
+  labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
+```
+
+## Plot3
+```{r, echo=false}
+ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm, se= FALSE)+
+  scale_color_brewer(type='seq',palette='PuOr')
+```
+
+## Plot4
+```{r, echo=false}
+AllProducts %>%
+  mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
+  ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
+    geom_boxplot() +
+    xlab("Product") +
+    theme(legend.position="none") +
+    xlab("")+
+  scale_fill_brewer(type='seq',palette='PuOr')
+```
 ## Sam Recommendations
 
 make this product and make mad money yo
