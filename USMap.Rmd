@@ -202,15 +202,19 @@ library(hrbrthemes)
 dairytotal <- dairybystate %>% 
   filter(state %in% c("California", "Wisconsin", "New York"))
 
-dairytotal %>% 
+d = dairytotal %>% 
   ggplot(aes(x = year, y = milk_produced, group = state, color = state)) +
   geom_line() +
   geom_point() +
-  scale_color_manual(values = c("purple", "orange", "pink")) +
+  scale_color_manual(values = c("purple", "magenta", "orange")) +
   ggtitle("Milk production from 1970 to 2017 of the top 3 producing states") +
   theme_ipsum() +
   ylab("Milk Produced") +
   transition_reveal(year)
 
 anim_save("top3dairy.gif")
+```
+
+```{r}
+d
 ```
