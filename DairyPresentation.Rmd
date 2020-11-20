@@ -154,9 +154,7 @@ animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "
 ```
 <<<<<<< HEAD
 ```{r echo= FALSE, fig.height=4, fig.width=4}
-=======
-```{r map, echo=FALSE, out.width= '50%'}
->>>>>>> e149acb1aadee0938d75da5563c6b4d4ebe30c09
+
 animatedmap
 ```
 
