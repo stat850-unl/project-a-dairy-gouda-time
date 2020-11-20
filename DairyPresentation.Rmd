@@ -180,6 +180,12 @@ put your farm in a state where you can make money yo
 ## What Products Should You Make?
 
 USDA Dairy Data for Products
+- 18 years of average retail price and farm value
+- Each product has its own 18 x 4 table
+
+USDA Dairy Product Consumption
+- 45 years of dairy consumption per capita divided by products 
+
 ```{r, include=FALSE}
 library(readr)
 library(tidyverse)
@@ -307,7 +313,7 @@ productcomp
 
 
 ## Dairy Consumption in the U.S.
-{r,include=FALSE}
+```{r,include=FALSE}
 
 colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
 ggplot(data=pcconsp, aes(x=Year))+
@@ -324,17 +330,21 @@ ggplot(data=pcconsp, aes(x=Year))+
   transition_reveal(Year)
 
 consumption<-anim_save("DairyConsumption")
+```
 
-
-{r,echo=FALSE}
+```{r,echo=FALSE}
 consumption
-
+```
 
 ## Product Recommendations
 
 - Get a contract with Kwik Twip to sell milk and butter
 - Make your own specialty cheese and ice cream to sell online or store front
 - Hire Becca to pair your cheeses with meat
+
+```{r, echo=FALSE,out.width = '25%'}
+knitr::include_graphics("cheesepic.jpg")
+```
 
 ## What should the producer look out for?
 In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites. 
