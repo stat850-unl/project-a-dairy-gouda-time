@@ -56,7 +56,7 @@ This data set includes 2400 rows with the variables:
 ## Digging into the data
 
 
-```{r, include = FALSE}
+```{r pullindairy, include = FALSE}
 # Silent Chunk! Say hello to the data!
 urlfile <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-29/state_milk_production.csv"
 dairycsv <- read.csv(urlfile)
@@ -64,21 +64,21 @@ dairybystate <- as.data.frame(dairycsv)
 ```
 
 First we need to explore a little.
-```{r, echo = TRUE}
+```{r exploremilk, echo = TRUE}
 which.min(dairybystate$milk_produced)
 which.max(dairybystate$milk_produced)
 ```
 
-```{r, echo = FALSE}
+```{r line1, echo = FALSE}
 dairybystate[2199,]
 ```
 
-```{r, echo = FALSE}
+```{r line2, echo = FALSE}
 dairybystate[2248,]
 ```
 
 ## My country tis of thee, sweet land of milk and cheese
-```{r, include = FALSE}
+```{r silentmap, include = FALSE}
 # Another silent chunk! Here comes big fun!
 
 library(usmap)
@@ -152,13 +152,17 @@ image_append(image_scale(image, "x200"))
 
 animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
 ```
+<<<<<<< HEAD
 ```{r echo= FALSE, fig.height=4, fig.width=4}
+=======
+```{r map, echo=FALSE, out.width= '50%'}
+>>>>>>> e149acb1aadee0938d75da5563c6b4d4ebe30c09
 animatedmap
 ```
 
 ## The 3 finalists...
 
-Let's take a look at CA, NY, and WI
+Let's take a look at CA, NY, and WI:
 
 ```{r, include = FALSE}
 library(ggplot2)
@@ -202,7 +206,7 @@ USDA Dairy Data for Products
 USDA Dairy Product Consumption
 - 45 years of dairy consumption per capita divided by products 
 
-```{r, include=FALSE}
+```{r readinmoney, include=FALSE}
 library(readr)
 library(tidyverse)
 
@@ -265,26 +269,26 @@ whole_milk<-whole_milk%>%
 
 AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
 ```
-```{r, echo=FALSE}
+```{r headproducts, echo=FALSE}
 head(AllProducts)
 ```
 
 
 ## Retail Prices Over Time
-```{r include=FALSE}
+```{r prices, include=FALSE}
 retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
   geom_point()+
   geom_smooth(method=lm,formula='y~x', se= FALSE)+
   scale_color_brewer(type='seq',palette='PuOr')
 ```
-```{r, echo=FALSE}
+```{r retailplot, echo=FALSE}
 retail
 ```
 
 ## Farm Value of Products Over Time
 
-```{r, include=FALSE}
+```{r farmvaluesilent, include=FALSE}
 library(ggplot2)
 library(reshape)
 library(gganimate)
@@ -295,12 +299,12 @@ farmvalue<-ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Produ
   geom_smooth(method=lm,formula='y~x', se= FALSE)+
   scale_color_brewer(type='div',palette='PuOr')
 ```
-```{r, echo=FALSE}
+```{r farmvalue, echo=FALSE}
 farmvalue
 ```
 
 ## Farm Value Compared to Retail Price
-```{r, include=FALSE}
+```{r farmsilent, include=FALSE}
 to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
 melted<-melt(to_plot, id="x")
 share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
@@ -308,12 +312,12 @@ share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) +
   scale_fill_brewer(type='seq',palette='PuOr')+
   labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
 ```
-```{r,echo=FALSE}
+```{r shareplot,echo=FALSE}
 share
 ```
 
 ## Farm Share Percentage by Product
-```{r, include=FALSE}
+```{r productsilent, include=FALSE}
 productcomp<- AllProducts %>%
   mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
   ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
@@ -323,13 +327,13 @@ productcomp<- AllProducts %>%
     xlab("")+
   scale_fill_brewer(type='seq',palette='PuOr')
 ```
-```{r, echo=FALSE}
+```{r productplot, echo=FALSE}
 productcomp
 ```
 
 
 ## Dairy Consumption in the U.S.
-```{r,include=FALSE}
+```{r consumptionsilent,include=FALSE}
 
 colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
 ggplot(data=pcconsp, aes(x=Year))+
@@ -348,7 +352,7 @@ ggplot(data=pcconsp, aes(x=Year))+
 consumption<-anim_save("DairyConsumption")
 ```
 
-```{r,echo=FALSE}
+```{r consumptionplot,echo=FALSE}
 consumption
 ```
 
@@ -358,7 +362,7 @@ consumption
 - Make your own specialty cheese and ice cream to sell online or store front
 - Hire Becca to pair your cheeses with meat in charcuterie board / snacking application
 
-```{r, echo=FALSE,out.width = '25%'}
+```{r cheesepic, echo=FALSE,out.width = '25%'}
 knitr::include_graphics("cheesepic.jpg")
 ```
 
@@ -379,7 +383,7 @@ Variables include:
 - Reason for Recall
 
 
-```{r, include=FALSE}
+```{r silentFDA, include=FALSE}
 #Hello and welcome to by big silent R chunk for reproduciblity's sake. include=FALSE so none of this will be printed, but I need it to make objects below. 
 
 #2020-2018 are on current listing exportable as excel from a jquery table that didn't want scraped...it goes into git repo as FDA.csv it that case
@@ -517,7 +521,7 @@ local({
 
 ```
 
-```{r, echo=FALSE}
+```{r dairy, echo=FALSE}
 dairy
 ```
 
@@ -530,7 +534,7 @@ slides > slide {
 </style>
 
 
-```{r,echo=FALSE}
+```{r filter,echo=FALSE}
 filtereditems2
 ```
 
