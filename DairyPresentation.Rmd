@@ -152,13 +152,46 @@ image_append(image_scale(image, "x200"))
 
 animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
 ```
-```{r echo=, fig.height=4, fig.width=4}
+```{r echo= FALSE, fig.height=4, fig.width=4}
 animatedmap
+```
+
+## The 3 finalists...
+
+Let's take a look at CA, NY, and WI
+
+```{r, include = FALSE}
+library(ggplot2)
+library(gganimate)
+library(hrbrthemes)
+
+dairytotal <- dairybystate %>% 
+  filter(state %in% c("California", "Wisconsin", "New York"))
+
+top3dairy = dairytotal %>% 
+  ggplot(aes(x = year, y = milk_produced, group = state, color = state)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("purple", "magenta", "orange")) +
+  ggtitle("Milk production from 1970 to 2017 of the top 3 producing states") +
+  theme_ipsum() +
+  ylab("Milk Produced") +
+  transition_reveal(year)
+```
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+top3dairy
 ```
 
 ## Kassidy recommendations
 
-put your farm in a state where you can make money yo
+Other things to consider:
+
+- CA environmental laws are *extreme*, but everyone likes to pair cheese with wine
+- NY land cost is *expensive*, but the urban demand is there
+- WI dairy history is *rich*, but competition is high
+
+Overall recommendation: Southcentral Wisconsin
 
 ## What Products Should You Make?
 
