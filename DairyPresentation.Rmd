@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ## The Set-Up {data-background=background.jpg data-background-size=cover}
 <div class= "black">
 
-Our team has been approached by a business person who happens to love dairy products! They are interested in starting a dairy to live out their childhood dreams, but are not sure where to start. We combed the USDA and FDA data to make recommendations to ensure they get the best dairy possible. 
+**Our team has been approached by a business person who happens to love dairy products! They are interested in starting a dairy to live out their childhood dreams, but are not sure where to start. We combed the USDA and FDA data to make recommendations to ensure they get the best dairy possible.**
 </div>
 
 ## HOLY COW!
@@ -45,6 +45,7 @@ cowsgif
 ## Where should we operate?
 
 ### Introducing the milk produced by state from 1970 to 2017.
+
 
 This data set includes 2400 rows with the variables:
 
@@ -150,10 +151,10 @@ image <- c(usa70pic, usa80pic, usa90pic, usa00pic, usa10pic, usa17pic)
 
 image_append(image_scale(image, "x200"))
 
-animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
+animatedmap <- image_animate(image_scale(image, "700x700"), fps = 1, dispose = "previous")
 ```
 
-```{r map, echo=FALSE, out.width= '60%', fig.align='center'}
+```{r map, echo=FALSE, out.width= '50%', fig.align='center'}
 animatedmap
 ```
 
@@ -174,13 +175,17 @@ top3dairy = dairytotal %>%
   geom_line() +
   geom_point() +
   scale_color_manual(values = c("purple", "magenta", "orange")) +
-  ggtitle("Milk production from 1970 to 2017 of the top 3 producing states") +
+  ggtitle("Milk production from 1970 to 2017 of the top 3") +
   theme_ipsum() +
   ylab("Milk Produced") +
   transition_reveal(year)
 ```
 
+<<<<<<< HEAD
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center',out.width='70%'}
+=======
+```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, out.width='80%'}
+>>>>>>> 46cdef42d1289f876eebc86f3ea4d0fdfa811c21
 top3dairy
 ```
 
