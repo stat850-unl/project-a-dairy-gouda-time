@@ -183,6 +183,8 @@ image <- c(usa70pic, usa80pic, usa90pic, usa00pic, usa10pic, usa17pic)
 
 image_append(image_scale(image, "x200"))
 ```
+
+AND WE MAKE A FREAKING COOL MAP!
 ```{r}
 
 animatedmap <- image_animate(image_scale(image, "400x400"), fps = 1, dispose = "previous")
@@ -191,3 +193,24 @@ dairygif <- image_write(animatedmap, "usadairy.gif")
 animatedmap
 ```
 
+Now to look at the big 3 in a more *intense* fashion
+```{r}
+library(ggplot2)
+library(gganimate)
+library(hrbrthemes)
+
+dairytotal <- dairybystate %>% 
+  filter(state %in% c("California", "Wisconsin", "New York"))
+
+dairytotal %>% 
+  ggplot(aes(x = year, y = milk_produced, group = state, color = state)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("purple", "orange", "pink")) +
+  ggtitle("Milk production from 1970 to 2017 of the top 3 producing states") +
+  theme_ipsum() +
+  ylab("Milk Produced") +
+  transition_reveal(year)
+
+anim_save("top3dairy.gif")
+```
