@@ -42,20 +42,6 @@ cowsgif
 - What are hazards to look out for during production to avoid recalls?
 
 
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-summary(cars)
-```
-
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
-```
-
-
-
 ## Where should we operate?
 
 Introducing the milk produced by state from 1970 to 2017.
@@ -249,7 +235,7 @@ head(AllProducts)
 
 
 ## Retail Prices Over Time
-```{r, include=FALSE}
+```{r include=FALSE}
 retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
   geom_point()+
@@ -334,7 +320,7 @@ consumption
 
 - Get a contract with Kwik Twip to sell milk and butter
 - Make your own specialty cheese and ice cream to sell online or store front
-- Hire Becca to pair your cheeses with meat
+- Hire Becca to pair your cheeses with meat in charcuterie board / snacking application
 
 ## What should the producer look out for?
 In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites. 
@@ -521,8 +507,14 @@ wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.w
 recallplot
 ```
 
-## Becca Recommendations
+## Production Recommendations
 
-Don't mess with *Listeria* yo
+- Ensure proper procedures for *Listeria monocytogenes* 
+- Make sure allergens are last in shift, label change out is critical control point
+<center>
+![Image from Hiperbaric](listeria.jpg) </center>
+
+
+
 
 
