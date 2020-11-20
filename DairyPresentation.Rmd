@@ -180,7 +180,7 @@ top3dairy = dairytotal %>%
   transition_reveal(year)
 ```
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.align='center',out.width='50%'}
 top3dairy
 ```
 
