@@ -152,16 +152,8 @@ image_append(image_scale(image, "x200"))
 
 animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
 ```
-<<<<<<< HEAD
-```{r map, echo=FALSE, out.width= '60%', fig.align='center'}
-=======
-<<<<<<< HEAD
-```{r echo= FALSE, fig.height=4, fig.width=4}
 
-=======
-```{r map, echo=FALSE, out.width= '70%', fig.align='center'}
->>>>>>> 7def3bc4ca6a955ee9434fc881d6209a7db34c38
->>>>>>> 8a1966d9f3da7753aec34e295b8016b5d7a199d2
+```{r map, echo=FALSE, out.width= '60%', fig.align='center'}
 animatedmap
 ```
 
