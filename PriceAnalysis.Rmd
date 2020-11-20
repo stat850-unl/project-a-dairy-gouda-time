@@ -102,6 +102,7 @@ AllProducts
 ```{r}
 library(ggplot2)
 library(reshape)
+library(gganimate)
 
 ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
@@ -115,8 +116,6 @@ ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) +
   geom_bar(stat="identity",position = "identity")+
   scale_fill_brewer(type='seq',palette='PuOr')+
   labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
-  
-
 
 ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
@@ -124,11 +123,11 @@ ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=
   geom_smooth(method=lm, se= FALSE)+
   scale_color_brewer(type='seq',palette='PuOr')
 
-ggplot(data=AllProducts, aes(x=Year, y=FarmShare_Percent, group=Product,color=Product)) +
-  geom_line(aes(color=Product))+
-  geom_point()+
-  geom_smooth(method=lm, se= FALSE)+
-  scale_color_brewer(type='div',palette='PuOr')
+# ggplot(data=AllProducts, aes(x=Year, y=FarmShare_Percent, group=Product,color=Product)) +
+#   geom_line(aes(color=Product))+
+#   geom_point()+
+#   geom_smooth(method=lm, se= FALSE)+
+#   scale_color_brewer(type='div',palette='PuOr')
 
 AllProducts %>%
   mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
@@ -139,10 +138,23 @@ AllProducts %>%
     xlab("")+
   scale_fill_brewer(type='seq',palette='PuOr')
 
+
+ggplot(data=pcconsp, aes(x=Year))+
+  geom_line(aes(y=Fluid/10),color='mediumorchid4')+
+  geom_line(aes(y=Cheese),color='mediumorchid')+
+  geom_line(aes(y=Butter),color='magenta')+
+  geom_line(aes(y=RegularIceCream),color='sienna1')+
+  geom_line(aes(y=LowFatIceCream),color='sienna3')+
+  scale_color_brewer(type='seq',palette='PuOr')+
+  transition_reveal(Year)
+
+anim_save("DairyConsumption")
+
 # to_plot <- data.frame(x=AllProducts$Year,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
 # melted<-melt(to_plot, id="x")
 # 
 # print(ggplot(melted,aes(x=x,y=value,fill=variable)) + geom_bar(stat="identity",position = "identity",alpha=.3))
+
 
 ```
 
