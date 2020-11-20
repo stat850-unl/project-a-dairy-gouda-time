@@ -58,7 +58,7 @@ plot(pressure)
 
 ## Where should we operate?
 
-Introducing the milk produced by state from 1970 to 2017.
+### Introducing the milk produced by state from 1970 to 2017.
 
 This data set includes 2400 rows with the variables:
 
@@ -90,9 +90,6 @@ dairybystate[2199,]
 ```{r, echo = FALSE}
 dairybystate[2248,]
 ```
-
-Upon further exploration, you can see that our range is from 3,000,000 to 42,339,000,000. Yikes, that's large
-
 
 ## My country tis of thee, sweet land of milk and cheese
 ```{r, include = FALSE}
@@ -169,7 +166,7 @@ image_append(image_scale(image, "x200"))
 
 animatedmap <- image_animate(image_scale(image, "800x800"), fps = 1, dispose = "previous")
 ```
-```{r, echo = FALSE}
+```{r echo=, fig.height=4, fig.width=4}
 animatedmap
 ```
 
