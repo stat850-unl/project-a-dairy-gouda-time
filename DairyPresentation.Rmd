@@ -201,8 +201,8 @@ Overall recommendation: Southcentral Wisconsin
 
 Data:
 USDA Dairy Data for Products
-* 18 years of average retail price and farm value
-* Each product has its own 18 x 4 table
+- 18 years of average retail price and farm value
+- Each product has its own 18 x 4 table
 
 USDA Dairy Product Consumption
 - 45 years of dairy consumption per capita divided by products 
