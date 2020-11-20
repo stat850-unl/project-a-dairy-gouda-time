@@ -199,6 +199,7 @@ Overall recommendation: Southcentral Wisconsin
 
 ## What Products Should You Make?
 
+Data:
 USDA Dairy Data for Products
 - 18 years of average retail price and farm value
 - Each product has its own 18 x 4 table
@@ -349,12 +350,9 @@ ggplot(data=pcconsp, aes(x=Year))+
   scale_color_manual(values = colors)+
   transition_reveal(Year)
 
-consumption<-anim_save("DairyConsumption")
+#consumption<-anim_save("DairyConsumption")
 ```
-
-```{r consumptionplot,echo=FALSE}
-consumption
-```
+![ ](ConsumptionGraph.gif)
 
 ## Product Recommendations
 
