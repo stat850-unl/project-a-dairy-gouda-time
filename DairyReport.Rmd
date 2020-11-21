@@ -13,25 +13,12 @@ library("pagedown")
 
 ```
 
-## R Markdown
+## OPE Here's a guideline I found. 
+Your written report should be approximately 2n+1 pages (or 450×(2n+1) words), where n is the number of people in your group. The extra page is to allow you space to describe your dataset, methods, and conclusions. The report should be grammatically correct, factually correct, with appropriate references, *including to the software packages you used to create it*. In order to find your package citations, you can use:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+citation("pagedown")
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ## Setting the stage
 
@@ -373,6 +360,9 @@ consumption<-anim_save("DairyConsumption")
 ```{r cheesepic, echo=FALSE,out.width = '25%'}
 knitr::include_graphics("cheesepic.jpg")
 ```
+
+
+
 
 ### Conclusions
 >>>>>>> 6d7ad3706f2879f7e50b2ff92c8e18f7c111d420
