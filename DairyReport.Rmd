@@ -190,18 +190,19 @@ Taking all these factors into consideration, Wisconsin would be the best choice.
 
 ## Profitable Products 
 
-Intro goes here
+Now with the location decided, it is time to look into the various dairy products and explore how to maximize profitability. There are several avenues to take when selling milk including contracts, spot price, and self-processing. Contracts can be made with local cooperatives who then provide products for larger businesses. Spot prices are the current market prices and are the easiest way to sell, but also have a lot of risk through volatile markets. The final method is to open your own processing plant, or collaborate to open one. This has a high start-up cost with the equipment for pasteurization and processing as well as passing inspections. To figure out the best route to take, let's take a closer look at the retail prices, farm value, and consumer demand for different dairy products. 
 
 ### Introducing the Data
 
-We are using 2 main entities for data.
-
-The first portion is provided by the USDA ERS:
+The data used in this preliminary analysis is provided by the USDA ERS:
 https://www.ers.usda.gov/data-products/dairy-data/
-Variables in these datasets (see CSVs below) are mainly numeric, pertaining to production and sales of dairy products. 
+Variables in these datasets are mainly numeric, pertaining to production and sales of dairy products. The first exploration looks at the prices. Between the four products examined, there are 72 rows and 4 columns (Year, Retail Price, Farm Value, Farm Share) of data.
 
-### Data Manipulation and Cleaning
-```{r}
+The second dataset contains the consumption per capita in the U.S. for dairy products. This is summarized by year for 42 years and contains several products. 
+
+### Data Manipulation
+The first step was to read the csv files in with matching headers using the readr package (Hadley Wickham, Jim Hester and Romain Francois, 2018) and join the tables together. A column was added to differentiate the products when the tables were combined. Adding columns and filtering was done through tidyverse (Wickham et al., 2019).
+```{r read_data, include=FALSE, message=FALSE, warning=FALSE}
 library(readr)
 library(tidyverse)
 
@@ -248,11 +249,6 @@ butter<-butter%>%
 cheese<-cheese%>%
   mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
 
-groupfunct<-function(x,name){
-  x<-x%>%
-    mutate(Product=X)
-}
-
 cheese<-cheese%>%
   mutate(Product="Cheese")
 butter<-butter%>%
@@ -263,13 +259,17 @@ whole_milk<-whole_milk%>%
   mutate(Product="Whole_Milk")
 
 AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
-AllProducts
+```
 
+```{r displaydata, echo=FALSE}
+head(AllProducts)
+head(pcconsp)
 
 ```
 
 ### Data Exploration
 #### Retail Prices
+First, let's look at the retail prices over time between whole milk, ice cream, butter, and cheese. Per pound, cheese and ice cream have a much higher retail price than whole milk and butter. What is also note-worth is the increase of these retail prices over time. Cheese and ice cream also have the greatest increase in retail price over the last 18 years, especially compared to whole milk which has remained relatively the same and actually decreased in 2015 to 2018. 
 ```{r prices, include=FALSE}
 retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
@@ -283,6 +283,7 @@ retail
 
 #### Farm Value
 
+The next thing to look at is the actual price the farmer receives for each of these products. As this graph shows, the price to the farmer is much more volatile than the retail price, even between year to year averages. There are many factors than influence the farmer's payment price, so the retail price does not often reflect the farm value. The farmer receives more from a pound of milk or butter than from a pound of ice cream. This makes sense based upon the number other ingredients in ice cream that also contribute to its overall retail price. The producer makes about the same amount for cheese as whole milk and butter, but recall that the retail price of cheese is much higher. So the next step is to compare these values. 
 ```{r farmvaluesilent, include=FALSE}
 library(ggplot2)
 library(reshape)
@@ -313,7 +314,7 @@ share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) +
 share
 ```
 
-### Farm Share Percentage by Product
+#### Farm Share Percentage by Product
 ```{r productsilent, include=FALSE}
 productcomp<- AllProducts %>%
   mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
@@ -404,7 +405,7 @@ OldJoin<-back %>% map(readHTMLTable)
 
 These tables were then cleaned (photo column removed from 2016-2017, and Product Type column removed as it contained many nonsensical assignments).
 
-```{r cleanandmerge, include=FALSE, warning=FALSE, message=FALSE}
+```{r cleanandmerge, message=FALSE, warning=FALSE, include=FALSE}
 #Okay, I know this is bad. I just got tired and brute forced everything together. The nesting structures were not playing nice with my late night brain so here we are. 
 Old<-rbind(OldJoin[[1]][["NULL"]],OldJoin[[2]][["NULL"]],OldJoin[[3]][["NULL"]],OldJoin[[4]][["NULL"]],OldJoin[[5]][["NULL"]],OldJoin[[6]][["NULL"]],OldJoin[[7]][["NULL"]],OldJoin[[8]][["NULL"]],OldJoin[[9]][["NULL"]],OldJoin[[10]][["NULL"]],OldJoin[[11]][["NULL"]],OldJoin[[12]][["NULL"]],OldJoin[[13]][["NULL"]],OldJoin[[14]][["NULL"]],OldJoin[[15]][["NULL"]],OldJoin[[16]][["NULL"]],OldJoin[[17]][["NULL"]],OldJoin[[18]][["NULL"]],OldJoin[[19]][["NULL"]],OldJoin[[20]][["NULL"]],OldJoin[[21]][["NULL"]],OldJoin[[22]][["NULL"]],OldJoin[[23]][["NULL"]],OldJoin[[24]][["NULL"]],OldJoin[[25]][["NULL"]],OldJoin[[26]][["NULL"]],OldJoin[[27]][["NULL"]],OldJoin[[28]][["NULL"]],OldJoin[[29]][["NULL"]],OldJoin[[30]][["NULL"]],OldJoin[[31]][["NULL"]],OldJoin[[32]][["NULL"]])
 Old<-as.data.frame(Old)
@@ -543,6 +544,9 @@ DT::datatable(febtable)
 A quick web search [confirmed](https://www.statnews.com/2017/03/09/cheese-recall-sargento-indiana/) this suspicion. Luckily, no one became sick from this outbreak, because such an efficient recall system was in place, however Sargento dropped this facility as a supplier. If our business person was looking to co-pack, they should be sure to implement safety and recall protocols. Even if they do not wish to copack, and remain a smaller producer, *Listeria* still remains a hazard to look out for, and they should be sure to understand how to mitigate its presence in product, otherwise there could be [large consequences](https://www.foodsafetynews.com/2018/04/vulto-creamery-shut-down-because-owner-did-not-understand/).
 
 ### Recommendations
+- Wisconsin is the place to be!
+- Make cheese and ice-cream, sell milk and butter at retailer
+- Employ preventative measures against *Listeria*
 
 ### Conclusions
 
