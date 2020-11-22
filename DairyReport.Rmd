@@ -527,6 +527,7 @@ wordcloud(words = wordclouddf$word, freq = wordclouddf$freq, min.freq = 1, max.w
 #purple and orange to be color friendly
 
 ```
+
 From the wordcloud we can see that "undeclared" and "*Listeria*" are of high occurrence. Undeclared is a term associated with the inclusion of unlabeled allergens. Production must be sure to label allergens if they are in product, and shifts must occur with allergen containing products at the end to avoid contamination of products that to not contain them. *Listeria* is of high concern, as this pathogen is potentially fatal. It can produce biofilms, sticky polysaccharides that allow it to adhere to processing surfaces if sanitation is not adequate.  
 
 I was curious if there were particular times of year to worry about *Listeria*; *E.coli* is a mesophile, meaning it likes body temperature for growth, so we generally see its recalls peak during the summer. *Listeria*, on the other hand, is a psychrophile, or a "cold-lover". Because it grows at refrigeration temperatures, and cheese is generally kept in a cold chain, I was not expecting to see peak months.
@@ -548,6 +549,7 @@ library(ggplot2)
 recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
 recallplot
 ```
+
 Despite the hypothesis that recalls would not have seasonal abnormalities, February jumped out.
 
 I decided to investigate further as to what went wrong this month, and saw multiple retailers (Meijer, Sargento) associated with *Listeria* in cheese from the 10th through the 28th of February, 2017. I thought this could be an outbreak related to a copacking distributor. Often, commercial retailers or large brands will have separate facilities assist in manufacturing product for their brand to broaden the supply chain. 
