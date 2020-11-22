@@ -10,7 +10,6 @@ library("pagedown")
 #install.packages("pagedown")
 #remotes::install_github("hrbrmstr/markdowntemplates") 
 #uncomment to get packages for pretty document
-
 ```
 
 ## OPE Here's a guideline I found. 
@@ -340,7 +339,7 @@ ggplot(data=pcconsp, aes(x=Year))+
   geom_line(aes(y=Butter,color="Butter"), size = 2)+
   geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
   geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
-  labs(title="Diary Product Consumption Per Capita", x = "Year",
+  labs(title="Dairy Product Consumption Per Capita", x = "Year",
       y = "Consumption (lbs), 
       Fluid is in tens of pounds",
       color = "Legend")  +
@@ -361,8 +360,15 @@ consumption<-anim_save("DairyConsumption")
 knitr::include_graphics("cheesepic.jpg")
 ```
 
+=======
+
+## Building a Brand, and Reducing Recalls 
 
 
+### Data Acquisition and Filtering
+In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites.
 
-### Conclusions
->>>>>>> 6d7ad3706f2879f7e50b2ff92c8e18f7c111d420
+
+#### Scraping from XML Tables
+I wanted to have a dataset of U.S. food recalls over the past 5 years to have a more comprehensive view of concerns, however this meant I had to use archived webpages from 2016-2017. The FDA websites provided XML data in HTML tables on multiple webpages (14 for 2016, 18 for 2017), rather than the .csv or excel output that was available for 2018-2020. To do this, I utilized the XML package (Lang, 2020) to scrape and purrr (Henry and Wickham, 2020) to list the data from the pages. 
+
