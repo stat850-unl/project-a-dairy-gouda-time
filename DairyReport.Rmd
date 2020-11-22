@@ -498,12 +498,9 @@ DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 library(DT)
 DT::datatable(DairySet)
 ```
-<<<<<<< HEAD
 
-### What are the frequently recall reasons?
-=======
 ###  What are the frequently recall reasons?
->>>>>>> 3c240e537b62ea384feaf36115f18e68a3a146a6
+
 Now that we have filtered the relevant items, it is time to investigate what are the common reasons for recall. In order to make a visualization for this, I made a wordcloud. Words were separated and put into dataframes using stringr (Wickham, 2019) and tm (Feinherer and Hornik, 2019). A dataframe containing words and their frequency was then passed to the wordcloud (Fellows, 2018) function to generate the following plot:
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(stringr)
