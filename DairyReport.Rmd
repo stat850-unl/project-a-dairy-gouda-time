@@ -367,13 +367,14 @@ ggplot(data=pcconsp, aes(x=Year))+
 # To shorten the length of time to compile the document, this animation was saved as a gif and then added below instead of generated each time. The code used to create the animation is commented out above. 
 ```
 ![ ](ConsumptionGraph.gif)
+
 Per person in the United States, butter and low fat ice cream consumption has remained fairly constant. Fluid milk and regular ice cream has decreased over time. The most surprising conclusion from this graph is cheese consumption has nearly doubled over this time from 17 lbs/person to nearly 40 lbs/person.
 
 ## Product Recommendations
 
-- Get a contract with [Kwik Trip](https://www.kwiktrip.com/our-story) to sell milk and butter
-- Make your own specialty cheese and ice cream to sell online or store front
-- [Hire Becca](https://furbeck.github.io/cv.pdf) to pair your cheeses with meat in charcuterie board / snacking application
+Based upon the preliminary price analysis and consumer demand, it is recommended to produce your own specialty cheese and ice cream to sell online or store front in a direct farm to consumer business model. This would help put more of the retail price in your pocket. In this business, you should also [hire Becca](https://furbeck.github.io/cv.pdf) to pair your cheeses with meat in charcuterie board packages.   
+
+The milk that is not used in your own production should be sold through a contract with [Kwik Trip Dairy](https://www.kwiktrip.com/our-story). They sell milk and butter to their customers and you will still receive a large portion of these sales.
 
 ```{r cheesepic, echo=FALSE,out.width = '25%'}
 knitr::include_graphics("cheesepic.jpg")
@@ -566,11 +567,10 @@ DT::datatable(febtable)
 A quick web search [confirmed](https://www.statnews.com/2017/03/09/cheese-recall-sargento-indiana/) this suspicion. Luckily, no one became sick from this outbreak, because such an efficient recall system was in place, however Sargento dropped this facility as a supplier. If our business person was looking to co-pack, they should be sure to implement safety and recall protocols. Even if they do not wish to copack, and remain a smaller producer, *Listeria* still remains a hazard to look out for, and they should be sure to understand how to mitigate its presence in product, otherwise there could be [large consequences](https://www.foodsafetynews.com/2018/04/vulto-creamery-shut-down-because-owner-did-not-understand/).
 
 ### Recommendations
-- Wisconsin is the place to be!
-- Make cheese and ice-cream, sell milk and butter at retailer
-- Employ preventative measures against *Listeria*
 
-### Conclusions
+## Conclusions
+
+In conclusion, it is recommended to start the creamery in Wisconsin where resources are available and regulations are relatively low. To overcome the competition in America's Dairyland, a direct-to-consumer business should be developed to sell ice cream and specialty cheese, carefully paired with flavorful meats. Remaining milk can be sold through contracts. The final recommendation is to employ preventative measures against *Listeria* and be proactive about product labeling to prevent expensive recalls and keep loyal customers. 
 
 
 ### Citations
@@ -609,15 +609,14 @@ Ian Fellows (2018). wordcloud: Word Clouds. R package version 2.6.
   
 Ingo Feinerer and Kurt Hornik (2019). tm: Text Mining Package. R package version 0.7-7.  https://CRAN.R-project.org/package=tm
   
-<<<<<<< HEAD
 Lionel Henry and Hadley Wickham (2020). purrr: Functional Programming Tools. R package version  0.3.4. https://CRAN.R-project.org/package=purrr
-=======
+
+
 Lionel Henry and Hadley Wickham (2020). purrr: Functional Programming Tools. R package version
   0.3.4. https://CRAN.R-project.org/package=purrr
   
 Paolo Di Lorenzo (2020). usmap: US Maps Including Alaska and Hawaii. R package version 0.5.1.
   https://CRAN.R-project.org/package=usmap
->>>>>>> 3209e40aa4d45f1cf3a699dc2211ee1de86ae658
 
 Thomas Lin Pedersen and David Robinson  (2020). gganimate: A Grammar of Animated
   Graphics. R package version 1.0.7.  https://CRAN.R-project.org/package=gganimate
