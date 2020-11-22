@@ -1,6 +1,6 @@
 ---
-title: "Stat 850 Project Description"
-author: "Rebecca Furbeck, Kassidy Buse, Samantha Teten"
+title: "Price Analysis"
+author: "Samantha Teten"
 output: github_document
 ---
 
@@ -145,7 +145,7 @@ ggplot(data=pcconsp, aes(x=Year))+
   geom_line(aes(y=Butter,color="Butter"), size = 2)+
   geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
   geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
-  labs(title="Diary Product Consumption Per Capita", x = "Year",
+  labs(title="Dairy Product Consumption Per Capita", x = "Year",
       y = "Consumption (lbs), 
       Fluid is in tens of pounds",
       color = "Legend")  +
@@ -162,22 +162,186 @@ anim_save("DairyConsumption")
 
 ```
 
-## Potential Topics to Explore Using the Data Set
-Scenario: We are a team of agricultural scientists who have been contacted by a business group interested in starting a dairy products creamery operation. They are looking to learn 
+Now with the location decided, it is time to look into the various dairy products and explore how to maximize profitability. There are several avenues to take when selling milk including contracts, spot price, and self-processing. Contracts can be made with local cooperatives who then provide products for larger businesses. Spot prices are the current market prices and are the easiest way to sell, but also have a lot of risk through volatile markets. The final method is to open your own processing plant, or collaborate to open one. This has a high start-up cost with the equipment for pasteurization and processing as well as passing inspections. To figure out the best route to take, let's take a closer look at the retail prices, farm value, and consumer demand for different dairy products. 
 
-We intend to learn:
-What in the world in happening in 2020 with milk prices? 
-What location should we processed in? (Investigate which states are excelling in milk production to have a supply chain)
-What products should we make? (Investigate the sales of products over time)
-What difficulties could arise or things should we be aware of? (FDA Recalls)
+### Introducing the Data
 
-## Group Members
-Samantha Teten
-Kassidy Buse
-Becca Furbeck
+The data used in this preliminary analysis is provided by the USDA ERS:
+https://www.ers.usda.gov/data-products/dairy-data/
+Variables in these datasets are mainly numeric, pertaining to production and sales of dairy products. The first exploration looks at the prices. Between the four products examined, there are 72 rows and 4 columns (Year, Retail Price, Farm Value, Farm Share) of data.
 
-## Stuff to look at
-- map of change in milk prod for each state (US Map) from 1970 to 2014
--change in milk production from 1970 to 2014 for top 3 states
--spread of farm price from retail price over time
--Reasons for recalls of dairy products
+The second dataset contains the consumption per capita in the U.S. for dairy products. This is summarized by year for 42 years and contains several products. 
+
+### Data Manipulation
+
+The first step was to read the csv files in with matching headers using the readr package (Hadley Wickham, Jim Hester and Romain Francois, 2018) and join the tables together. A column was added to differentiate the products when the tables were combined. Adding columns and filtering was done through tidyverse (Wickham et al., 2019) and then displayed through the DT package (Xie, Cheng, and Tan, 2020).
+```{r read_data, include=FALSE, message=FALSE, warning=FALSE}
+library(readr)
+library(tidyverse)
+library(DT)
+
+ice_cream_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+ice_cream <- read_csv("ice_cream.csv", 
+                       col_names = ice_cream_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+whole_milk_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
+whole_milk <- read_csv("whole_milk.csv", 
+                       col_names = whole_milk_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-5)
+
+butter_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+butter <- read_csv("butter.csv", 
+                       col_names = butter_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+cheese_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent")
+cheese <- read_csv("cheese.csv", 
+                       col_names = cheese_header, 
+                       col_types = "dddd_", skip = 3) %>%
+  filter(Year <= 2018) %>%
+  select(-4)
+
+consupt_header<-c("Year","Fluid","Cheese","Butter","RegularIceCream","LowFatIceCream")
+pcconsp <- read_csv("pcconsp.csv", 
+                       col_names = consupt_header, 
+                       col_types = "dddddd", skip = 6) %>%
+  filter(Year <= 2019)
+
+head(whole_milk)
+NROW(whole_milk)
+
+butter<-butter%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+cheese<-cheese%>%
+  mutate(FarmShare_Percent=FarmValue_Dollars/RetailPrice_Dollars*100)
+
+cheese<-cheese%>%
+  mutate(Product="Cheese")
+butter<-butter%>%
+  mutate(Product="Butter")
+ice_cream<-ice_cream%>%
+  mutate(Product="Ice_Cream")
+whole_milk<-whole_milk%>%
+  mutate(Product="Whole_Milk")
+
+AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
+```
+
+```{r displaydata, echo=FALSE}
+DT::datatable(AllProducts)
+DT::datatable(pcconsp)
+```
+
+### Data Exploration
+#### Retail Prices
+
+First, let's look at the retail prices over time between whole milk, ice cream, butter, and cheese. Per pound, cheese and ice cream have a much higher retail price than whole milk and butter. What is also note-worth is the increase of these retail prices over time. Cheese and ice cream also have the greatest increase in retail price over the last 18 years, especially compared to whole milk which has remained relatively the same and actually decreased in 2015 to 2018. This line graph was produced using the ggplot2 package (H. Wickham, 2016) and the colors are from ColorBrewer (Erich Neuwirth, 2014). 
+```{r prices, include=FALSE}
+retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='seq',palette='PuOr')
+```
+```{r retailplot, echo=FALSE}
+retail
+```
+
+#### Farm Value
+
+The next thing to look at is the actual price the farmer receives for each of these products. As this graph shows, the price to the farmer is much more volatile than the retail price, even between year to year averages. There are many factors than influence the farmer's payment price, so the retail price does not often reflect the farm value. The farmer receives more from a pound of milk or butter than from a pound of ice cream. This makes sense based upon the number other ingredients in ice cream that also contribute to its overall retail price. The producer makes about the same amount for cheese as whole milk and butter, but recall that the retail price of cheese is much higher. So the next step is to compare these values. 
+```{r farmvaluesilent, include=FALSE}
+library(ggplot2)
+library(reshape)
+library(gganimate)
+
+farmvalue<-ggplot(data=AllProducts, aes(x=Year, y=FarmValue_Dollars, group=Product,color=Product)) +
+  geom_line(aes(color=Product))+
+  geom_point()+
+  geom_smooth(method=lm,formula='y~x', se= FALSE)+
+  scale_color_brewer(type='div',palette='PuOr')
+```
+```{r farmvalue, echo=FALSE}
+farmvalue
+```
+
+#### Farm Share
+
+Below is a visual representation using a bar graph of the dairy's fraction of the retail price. This is averaged across all of the years in the dataset and displayed by product. Cheese has the greatest retail price, but also one of the largest gaps between the farm share and the total price. Whole milk and butter are very similar where it appears a little more than 50% of the total retail price goes to the dairy. Now let's actually calculate this difference. The difference between the farm value and the retail price are from the expense of transporting, processing, and marketing these products. Especially in a market with very perishable items, these expenses are high and can only be minimized by taking on the processing and marketing yourself with a [store-front creamery](https://www.lancasterfarming.com/farming/dairy/direct-sales-offer-alternative-to-commodity-milk/article_4131e179-7233-58ea-987d-cbef8db77742.html). 
+```{r farmsilent, include=FALSE}
+to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
+melted<-melt(to_plot, id="x")
+share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) + 
+  geom_bar(stat="identity",position = "identity")+
+  scale_fill_brewer(type='seq',palette='PuOr')+
+  labs(title="Farm Share of Retail Price by Product",x="Product",y="Value ($)")
+```
+```{r shareplot,echo=FALSE}
+share
+```
+To graph two different attributes in the same bar graph, the package Reshape was used (H. Wickham, 2007).
+
+#### Farm Share Percentage by Product
+
+The box plot below shows the actual values of this farm share by product. Ice cream has approximately 17% farm share while butter has approximately 53% farm share. Whole milk is not far behind with 48% farm share. It should also be noted that there is variability in the return between years based upon the products. Whole milk and butter have a wider range of farm share values between years. This is likely because the retail price follows the farm price more closely in these products than it does in ice cream or cheese, so there is more volatility and at a slight lag to the farm price. 
+
+```{r productsilent, include=FALSE}
+productcomp<- AllProducts %>%
+  mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
+  ggplot( aes(x=reorder(Product, FarmShare_Percent), y=FarmShare_Percent, fill=Product)) + 
+    geom_boxplot() +
+    xlab("Product") +
+    theme(legend.position="none") +
+    xlab("")+
+  scale_fill_brewer(type='seq',palette='PuOr')
+```
+```{r productplot, echo=FALSE}
+productcomp
+```
+
+#### Dairy Consumption Per Capita
+
+Finally, as we think about products that would be worthwhile to process in our creamery, it is important to look at consumer demand for these products and not just price. This line graph was produced using the consumer data in ggplot2 (H. Wickham, 2016). It shows how the demand for each product has changed over the past 40 years. The animation was made using the gganimate package (Thomas Lin Pedersen and David Robinson, 2020). 
+
+```{r consumptionsilent,include=FALSE}
+
+colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
+ggplot(data=pcconsp, aes(x=Year))+
+  geom_line(aes(y=Fluid/10,color="Fluid"), size = 2)+
+  geom_line(aes(y=Cheese,color="Cheese"), size =2)+
+  geom_line(aes(y=Butter,color="Butter"), size = 2)+
+  geom_line(aes(y=RegularIceCream,color="RegularIceCream"), size = 2)+
+  geom_line(aes(y=LowFatIceCream, color="LowFatIceCream"), size =2)+
+  labs(title="Dairy Product Consumption Per Capita", x = "Year",
+      y = "Consumption (lbs), 
+      Fluid is in tens of pounds",
+      color = "Legend")  +
+  scale_color_manual(values = colors)
+# + transition_reveal(Year)
+# 
+# consumption<-anim_save("DairyConsumption")
+
+# To shorten the length of time to compile the document, this animation was saved as a gif and then added below instead of generated each time. The code used to create the animation is commented out above. 
+```
+![ ](ConsumptionGraph.gif)
+
+Per person in the United States, butter and low fat ice cream consumption has remained fairly constant. Fluid milk and regular ice cream has decreased over time. The most surprising conclusion from this graph is cheese consumption has nearly doubled over this time from 17 lbs/person to nearly 40 lbs/person.
+
+## Product Recommendations
+
+Based upon the preliminary price analysis and consumer demand, it is recommended to produce your own specialty cheese and ice cream to sell online or store front in a direct farm to consumer business model. This would help put more of the retail price in your pocket. In this business, you should also [hire Becca](https://furbeck.github.io/cv.pdf) to pair your cheeses with meat in charcuterie board packages.   
+
+The milk that is not used in your own production should be sold through a contract with [Kwik Trip Dairy](https://www.kwiktrip.com/our-story). They sell milk and butter to their customers and you will still receive a large portion of these sales.
+
+```{r cheesepic, echo=FALSE,out.width = '25%'}
+knitr::include_graphics("cheesepic.jpg")
+```
+
