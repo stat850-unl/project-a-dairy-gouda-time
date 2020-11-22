@@ -7,8 +7,8 @@ output: markdowntemplates::skeleton
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("pagedown")
-#install.packages("pagedown")
-#remotes::install_github("hrbrmstr/markdowntemplates") 
+# install.packages("pagedown")
+# remotes::install_github("hrbrmstr/markdowntemplates")
 #uncomment to get packages for pretty document
 ```
 
@@ -16,7 +16,7 @@ library("pagedown")
 Your written report should be approximately 2n+1 pages (or 450×(2n+1) words), where n is the number of people in your group. The extra page is to allow you space to describe your dataset, methods, and conclusions. The report should be grammatically correct, factually correct, with appropriate references, *including to the software packages you used to create it*. In order to find your package citations, you can use:
 
 ```{r}
-citation("pagedown")
+citation("tidyverse")
 ```
 
 ## Setting the stage
@@ -484,7 +484,7 @@ library(DT)
 DT::datatable(DairySet)
 ```
 ### What are the frequently recall reasons?
-Now that we have filtered the relevant items, it is time to investigate what are the common reasons for recall. In order to make a visualization for this, I made a wordcloud. Words were seperated and put into dataframes using stringr (Wickham, 2019) and tm (Feinherer and Hornik, 2019). A dataframe containing words and their frequency was then passed to the wordcloud (Fellows, 2018) function to generate the following plot:
+Now that we have filtered the relevant items, it is time to investigate what are the common reasons for recall. In order to make a visualization for this, I made a wordcloud. Words were separated and put into dataframes using stringr (Wickham, 2019) and tm (Feinherer and Hornik, 2019). A dataframe containing words and their frequency was then passed to the wordcloud (Fellows, 2018) function to generate the following plot:
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(stringr)
 library(tm)
@@ -562,8 +562,22 @@ Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubrida
   
 H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 
+H. Wickham. Reshaping data with the
+reshape package. Journal of Statistical
+Software, 21(12), 2007.
+
 Hadley Wickham (2019). stringr: Simple, Consistent Wrappers for Common String Operations. R
   package version 1.4.0. https://CRAN.R-project.org/package=stringr
+  
+Hadley Wickham, Jim Hester and Romain
+  Francois (2018). readr: Read Rectangular
+  Text Data. R package version 1.3.1.
+  https://CRAN.R-project.org/package=readr
+  
+Wickham et al., (2019). Welcome to the
+  tidyverse. Journal of Open Source
+  Software, 4(43), 1686,
+  https://doi.org/10.21105/joss.01686
 
 Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr: A Grammar of
   Data Manipulation. R package version 1.0.2. https://CRAN.R-project.org/package=dplyr
@@ -579,6 +593,11 @@ Ingo Feinerer and Kurt Hornik (2019). tm: Text Mining Package. R package version
   
 Lionel Henry and Hadley Wickham (2020). purrr: Functional Programming Tools. R package version
   0.3.4. https://CRAN.R-project.org/package=purrr
+
+Thomas Lin Pedersen and David Robinson
+  (2020). gganimate: A Grammar of Animated
+  Graphics. R package version 1.0.7.
+  https://CRAN.R-project.org/package=gganimate
   
 Yihui Xie (2017). printr: Automatically Print R Objects to Appropriate Formats According to
   the 'knitr' Output Format. R package version 0.1. https://CRAN.R-project.org/package=printr
