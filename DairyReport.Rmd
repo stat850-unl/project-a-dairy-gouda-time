@@ -201,10 +201,11 @@ Variables in these datasets are mainly numeric, pertaining to production and sal
 The second dataset contains the consumption per capita in the U.S. for dairy products. This is summarized by year for 42 years and contains several products. 
 
 ### Data Manipulation
-The first step was to read the csv files in with matching headers using the readr package (Hadley Wickham, Jim Hester and Romain Francois, 2018) and join the tables together. A column was added to differentiate the products when the tables were combined. Adding columns and filtering was done through tidyverse (Wickham et al., 2019).
+The first step was to read the csv files in with matching headers using the readr package (Hadley Wickham, Jim Hester and Romain Francois, 2018) and join the tables together. A column was added to differentiate the products when the tables were combined. Adding columns and filtering was done through tidyverse (Wickham et al., 2019) and then displayed through the DT package (Xie, Cheng, and Tan, 2020).
 ```{r read_data, include=FALSE, message=FALSE, warning=FALSE}
 library(readr)
 library(tidyverse)
+library(DT)
 
 ice_cream_header<-c("Year","RetailPrice_Dollars","FarmValue_Dollars","FarmShare_Percent","","")
 ice_cream <- read_csv("ice_cream.csv", 
@@ -262,14 +263,13 @@ AllProducts<-rbind(butter,cheese,ice_cream,whole_milk)
 ```
 
 ```{r displaydata, echo=FALSE}
-head(AllProducts)
-head(pcconsp)
-
+DT::datatable(AllProducts)
+DT::datatable(pcconsp)
 ```
 
 ### Data Exploration
 #### Retail Prices
-First, let's look at the retail prices over time between whole milk, ice cream, butter, and cheese. Per pound, cheese and ice cream have a much higher retail price than whole milk and butter. What is also note-worth is the increase of these retail prices over time. Cheese and ice cream also have the greatest increase in retail price over the last 18 years, especially compared to whole milk which has remained relatively the same and actually decreased in 2015 to 2018. 
+First, let's look at the retail prices over time between whole milk, ice cream, butter, and cheese. Per pound, cheese and ice cream have a much higher retail price than whole milk and butter. What is also note-worth is the increase of these retail prices over time. Cheese and ice cream also have the greatest increase in retail price over the last 18 years, especially compared to whole milk which has remained relatively the same and actually decreased in 2015 to 2018. This line graph was produced using the ggplot2 package (H. Wickham, 2016) and the colors are from ColorBrewer (Erich Neuwirth, 2014). 
 ```{r prices, include=FALSE}
 retail<- ggplot(data=AllProducts, aes(x=Year, y=RetailPrice_Dollars, group=Product,color=Product)) +
   geom_line(aes(color=Product))+
@@ -302,6 +302,7 @@ farmvalue
 
 #### Farm Share
 
+Below is a visual representation using a bar graph of the dairy's fraction of the retail price. This is averaged across all of the years in the dataset and displayed by product. Cheese has the greatest retail price, but also one of the largest gaps between the farm share and the total price. Whole milk and butter are very similar where it appears a little more than 50% of the total retail price goes to the dairy. Now let's actually calculate this difference. The difference between the farm value and the retail price are from the expense of transporting, processing, and marketing these products. Especially in a market with very perishable items, these expenses are high and can only be minimized by taking on the processing and marketing yourself with a [store-front creamery](https://www.lancasterfarming.com/farming/dairy/direct-sales-offer-alternative-to-commodity-milk/article_4131e179-7233-58ea-987d-cbef8db77742.html). 
 ```{r farmsilent, include=FALSE}
 to_plot <- data.frame(x=AllProducts$Product,RetailPriceDollars=AllProducts$RetailPrice_Dollars,FarmValueDollars=AllProducts$FarmValue_Dollars)
 melted<-melt(to_plot, id="x")
@@ -315,6 +316,9 @@ share
 ```
 
 #### Farm Share Percentage by Product
+
+The box plot below shows the actual values of this farm share by product. Ice cream has approximately 17% farm share while butter has approximately 53% farm share. Whole milk is not far behind with 48% farm share. It should also be noted that there is variability in the return between years based upon the products. Whole milk and butter have a wider range of farm share values between years. This is likely because the retail price follows the farm price more closely in these products than it does in ice cream or cheese, so there is more volatility and at a slight lag to the farm price. 
+
 ```{r productsilent, include=FALSE}
 productcomp<- AllProducts %>%
   mutate(Product = fct_reorder(Product, FarmShare_Percent, .fun='median')) %>%
@@ -331,6 +335,7 @@ productcomp
 
 #### Dairy Consumption Per Capita
 
+Finally, as we think about products that would be worthwhile to process in our creamery, it is important to look at consumer demand for these products and not just price. 
 ```{r consumptionsilent,include=FALSE}
 
 colors <- c("Fluid" = "mediumorchid4", "Cheese" = "mediumorchid", "Butter" = "magenta","RegularIceCream"="sienna1","LowFatIceCream"="sienna3")
@@ -344,16 +349,18 @@ ggplot(data=pcconsp, aes(x=Year))+
       y = "Consumption (lbs), 
       Fluid is in tens of pounds",
       color = "Legend")  +
-  scale_color_manual(values = colors)+
-  transition_reveal(Year)
+  scale_color_manual(values = colors)
+# + transition_reveal(Year)
+# 
+# consumption<-anim_save("DairyConsumption")
 
-consumption<-anim_save("DairyConsumption")
+# To shorten the length of time to compile the document, this animation was saved as a gif and then added below instead of generated each time. The code used to create the animation is commented out above. 
 ```
 ![ ](ConsumptionGraph.gif)
 
 ## Product Recommendations
 
-- Get a contract with Kwik Trip to sell milk and butter
+- Get a contract with [Kwik Trip](https://www.kwiktrip.com/our-story) to sell milk and butter
 - Make your own specialty cheese and ice cream to sell online or store front
 - Hire Becca to pair your cheeses with meat in charcuterie board / snacking application
 
@@ -484,7 +491,7 @@ DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 library(DT)
 DT::datatable(DairySet)
 ```
-### What are the frequently recall reasons?
+###  What are the frequently recall reasons?
 Now that we have filtered the relevant items, it is time to investigate what are the common reasons for recall. In order to make a visualization for this, I made a wordcloud. Words were separated and put into dataframes using stringr (Wickham, 2019) and tm (Feinherer and Hornik, 2019). A dataframe containing words and their frequency was then passed to the wordcloud (Fellows, 2018) function to generate the following plot:
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(stringr)
@@ -566,25 +573,18 @@ Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubrida
   
 H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 
-H. Wickham. Reshaping data with the
-reshape package. Journal of Statistical
+H. Wickham. Reshaping data with the reshape package. Journal of Statistical
 Software, 21(12), 2007.
 
-Hadley Wickham (2019). stringr: Simple, Consistent Wrappers for Common String Operations. R
-  package version 1.4.0. https://CRAN.R-project.org/package=stringr
+Hadley Wickham (2019). stringr: Simple, Consistent Wrappers for Common String Operations. R package version 1.4.0. https://CRAN.R-project.org/package=stringr
   
-Hadley Wickham, Jim Hester and Romain
-  Francois (2018). readr: Read Rectangular
-  Text Data. R package version 1.3.1.
-  https://CRAN.R-project.org/package=readr
+Hadley Wickham, Jim Hester and Romain Francois (2018). readr: Read Rectangular
+  Text Data. R package version 1.3.1.  https://CRAN.R-project.org/package=readr
   
-Wickham et al., (2019). Welcome to the
-  tidyverse. Journal of Open Source
-  Software, 4(43), 1686,
-  https://doi.org/10.21105/joss.01686
+Wickham et al., (2019). Welcome to the  tidyverse. Journal of Open Source
+  Software, 4(43), 1686,  https://doi.org/10.21105/joss.01686
 
-Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr: A Grammar of
-  Data Manipulation. R package version 1.0.2. https://CRAN.R-project.org/package=dplyr
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr: A Grammar of Data Manipulation. R package version 1.0.2. https://CRAN.R-project.org/package=dplyr
   
 Hadley Wickham (2020). tidyr: Tidy Messy Data. R package version 1.1.2.
   https://CRAN.R-project.org/package=tidyr
@@ -592,25 +592,18 @@ Hadley Wickham (2020). tidyr: Tidy Messy Data. R package version 1.1.2.
 Ian Fellows (2018). wordcloud: Word Clouds. R package version 2.6.
   https://CRAN.R-project.org/package=wordcloud
   
-Ingo Feinerer and Kurt Hornik (2019). tm: Text Mining Package. R package version 0.7-7.
-  https://CRAN.R-project.org/package=tm
+Ingo Feinerer and Kurt Hornik (2019). tm: Text Mining Package. R package version 0.7-7.  https://CRAN.R-project.org/package=tm
   
-Lionel Henry and Hadley Wickham (2020). purrr: Functional Programming Tools. R package version
-  0.3.4. https://CRAN.R-project.org/package=purrr
+Lionel Henry and Hadley Wickham (2020). purrr: Functional Programming Tools. R package version  0.3.4. https://CRAN.R-project.org/package=purrr
 
-Thomas Lin Pedersen and David Robinson
-  (2020). gganimate: A Grammar of Animated
-  Graphics. R package version 1.0.7.
-  https://CRAN.R-project.org/package=gganimate
+Thomas Lin Pedersen and David Robinson  (2020). gganimate: A Grammar of Animated
+  Graphics. R package version 1.0.7.  https://CRAN.R-project.org/package=gganimate
   
-Yihui Xie (2017). printr: Automatically Print R Objects to Appropriate Formats According to
-  the 'knitr' Output Format. R package version 0.1. https://CRAN.R-project.org/package=printr
+Yihui Xie (2017). printr: Automatically Print R Objects to Appropriate Formats According to  the 'knitr' Output Format. R package version 0.1. https://CRAN.R-project.org/package=printr
 
-Yihui Xie, Joe Cheng and Xianying Tan (2020). DT: A Wrapper of the JavaScript Library
-  'DataTables'. R package version 0.16. https://CRAN.R-project.org/package=DT
+Yihui Xie, Joe Cheng and Xianying Tan (2020). DT: A Wrapper of the JavaScript Library  'DataTables'. R package version 0.16. https://CRAN.R-project.org/package=DT
 
-Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report Generation in R. R
-  package version 1.30.
+Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report Generation in R. R  package version 1.30.
 
 Yihui Xie, Romain Lesur, Brent Thorne and Xianying Tan (2020). pagedown: Paginate the HTML
   Output of R Markdown with CSS for Print. R package version 0.12.
