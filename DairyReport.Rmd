@@ -367,38 +367,34 @@ knitr::include_graphics("cheesepic.jpg")
 
 
 ### Data Acquisition and Filtering
-In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites, as seen below:. 
-
-<iframe src="http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14" width="900" height="200" style="border: none;"></iframe>
+In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites.
 
 #### Scraping from XML Tables
 I wanted to have a dataset of U.S. food recalls over the past 5 years to have a more comprehensive view of concerns, however this meant I had to use archived webpages from 2016-2017. The FDA websites provided XML data in HTML tables on multiple webpages (14 for 2016, 18 for 2017), rather than the .csv or excel output that was available for 2018-2020. To do this, I utilized the XML package (Lang, 2020) to scrape and purrr (Henry and Wickham, 2020) to list the data from the pages. 
 
-```{r silentFDA, include=FALSE}
-FDAcurrentsite="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts"
+```{r silentFDA, include=FALSE, warning=FALSE, message=FALSE}
+# Load in 2018-2020 data
 FDA1<-read.csv("FDA.csv", skip = 1)
 
+#Load relevant packages
 library(XML)
 library(dplyr)
 library(purrr)
+#These break the table scraper somehow so detach them 
 unloadNamespace("maps")
 unloadNamespace("usmap")
 
-#Archived 2017 has 14 pages
-FDA2017site='http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=14'
-#Archived 2016 has 18 pages
-FDA2016site = 'http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=17'
-
-tbls_xml <- readHTMLTable(FDA2017site)
-
+#Scrape 2016 tables
 tbls16<-capture.output(for (i in 1:14){
   print(paste0('http://wayback.archive-it.org/7993/20180125100707/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2017/default.htm?Page=',i,''))
 })
 
+#Scrape 2017 tables
 tbls17<-capture.output(for (i in 1:18){
   (print(paste0('http://wayback.archive-it.org/7993/20180125100804/https://www.fda.gov/Safety/Recalls/ArchiveRecalls/2016/default.htm?Page=',i,'')))
 })
 
+#Merge tables
 FDAoldtbl<-c(tbls16,tbls17)
 FDAoldtabl<-as.data.frame(FDAoldtbl)
 front<-gsub("^.....","",FDAoldtabl$FDAoldtbl)
@@ -408,7 +404,7 @@ OldJoin<-back %>% map(readHTMLTable)
 
 These tables were then cleaned (photo column removed from 2016-2017, and Product Type column removed as it contained many nonsensical assignments).
 
-```{r cleanandmerge, include=FALSE}
+```{r cleanandmerge, include=FALSE, warning=FALSE, message=FALSE}
 #Okay, I know this is bad. I just got tired and brute forced everything together. The nesting structures were not playing nice with my late night brain so here we are. 
 Old<-rbind(OldJoin[[1]][["NULL"]],OldJoin[[2]][["NULL"]],OldJoin[[3]][["NULL"]],OldJoin[[4]][["NULL"]],OldJoin[[5]][["NULL"]],OldJoin[[6]][["NULL"]],OldJoin[[7]][["NULL"]],OldJoin[[8]][["NULL"]],OldJoin[[9]][["NULL"]],OldJoin[[10]][["NULL"]],OldJoin[[11]][["NULL"]],OldJoin[[12]][["NULL"]],OldJoin[[13]][["NULL"]],OldJoin[[14]][["NULL"]],OldJoin[[15]][["NULL"]],OldJoin[[16]][["NULL"]],OldJoin[[17]][["NULL"]],OldJoin[[18]][["NULL"]],OldJoin[[19]][["NULL"]],OldJoin[[20]][["NULL"]],OldJoin[[21]][["NULL"]],OldJoin[[22]][["NULL"]],OldJoin[[23]][["NULL"]],OldJoin[[24]][["NULL"]],OldJoin[[25]][["NULL"]],OldJoin[[26]][["NULL"]],OldJoin[[27]][["NULL"]],OldJoin[[28]][["NULL"]],OldJoin[[29]][["NULL"]],OldJoin[[30]][["NULL"]],OldJoin[[31]][["NULL"]],OldJoin[[32]][["NULL"]])
 Old<-as.data.frame(Old)
@@ -440,7 +436,7 @@ We had to find a good list of dairy products that would be current and appropria
 
 #### Wikipedia to the rescue!
 The htmltab package (Rubba, 2020) can be used to scrape tables off Wikipedia. The first column includes the name of the dairy product or cheese, so these could be pulled from all tables with purrr's map as shown in code chunk below. The names were combined into the dairy object, preview below:
-```{r wikipedia, echo=TRUE, results='hide'}
+```{r wikipedia, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 library(purrr)
 library(htmltab)
 library(tidyr)
@@ -464,7 +460,7 @@ head(dairy)
 
 #### Filter Non-Dairy Imitations and Nut-Butters
 Then further filtering was performed as some of the strings had interesting consequences. A type of product called "So" pulled soybean so I had to pull that out, and "butter" gave an inevitable "Nut butter" problem that had to be negated. The "getout" object was created and partnered with dpylr (Wickham, 2020) to remove these non-dairy products from the desired dairy output. 
-```{r FDA filter, echo=TRUE, results='hide'}
+```{r FDA filter, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 library(stringr)
 library(dplyr)
 
@@ -483,12 +479,13 @@ DairySet<-FDA %>% filter(Product.Description %in% filtereditems2)
 
 ```
 
-```{r echo=FALSE}
-head(DairySet)
+```{r dairyset, echo=FALSE, warning=FALSE, message=FALSE}
+library(DT)
+DT::datatable(DairySet)
 ```
 ### What are the frequently recall reasons?
 Now that we have filtered the relevant items, it is time to investigate what are the common reasons for recall. In order to make a visualization for this, I made a wordcloud. Words were seperated and put into dataframes using stringr (Wickham, 2019) and tm (Feinherer and Hornik, 2019). A dataframe containing words and their frequency was then passed to the wordcloud (Fellows, 2018) function to generate the following plot:
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(stringr)
 library(tm)
 library(RColorBrewer)
@@ -519,7 +516,7 @@ I was curious if there were particular times of year to worry about *Listeria*; 
 
 ### Are there seasonal patterns in recalls?
 To plot recall frequency over month, the Date column was separated into month, day and year columns with lubridate (Gerolemund and Wickham, 2011) and given to ggplot2 (Wickham, 2016) for histogram generation. 
-```{r, include=FALSE}
+```{r, include=FALSE, warning=FALSE, message=FALSE}
 library(lubridate)
 #Make month, day, and year variables to investigate seasonal trends
 DairySet<-DairySet %>% mutate(Date = mdy(Date))%>%mutate(year = lubridate::year(Date),
@@ -529,7 +526,7 @@ DairySet<-DairySet %>% mutate(Date = mdy(Date))%>%mutate(year = lubridate::year(
 DairySet$month<-month.abb[DairySet$month]
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
 recallplot<-ggplot(DairySet, aes(month))+geom_histogram(aes(fill=..count..),stat = "count")+ scale_x_discrete(limits = month.abb)+        scale_fill_gradient("Count", low = "purple", high = "orange")+ylab("Number of Recalls")+xlab("Month")+ggtitle("Recalls of U.S. Dairy Products during 2016-2020")
 recallplot
@@ -538,9 +535,8 @@ Despite the hypothesis that recalls would not have seasonal abnormalities, Febru
 
 I decided to investigate further as to what went wrong this month, and saw multiple retailers (Meijer, Sargento) associated with *Listeria* in cheese from the 10th through the 28th of February, 2017. I thought this could be an outbreak related to a copacking distributor. Often, commercial retailers or large brands will have separate facilities assist in manufacturing product for their brand to broaden the supply chain. 
 Data that led to these observations is shown below, as formatted by the DT package (Xie, Cheng, and Tan, 2020).
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 febtable<-DairySet %>% filter(month == "Feb") %>% select("Date","Product.Description","Recall.Reason.Description","Company.Name")
-library(DT)
 DT::datatable(febtable)
 ```
 
