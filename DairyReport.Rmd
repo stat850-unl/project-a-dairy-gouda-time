@@ -103,7 +103,7 @@ So it looks like our minimum value is 3,000,000 and our maximum value is 40,385,
 
 Well, that didn't help much, but logically, we can eliminate the lower bounds because we aren't interested in these small states with limited supply; we want the milk. 
 
-##### Creating the map
+##### Welcome to Miss America 2020
 
 ```{r, include = FALSE}
 library(usmap)
@@ -125,11 +125,11 @@ usadairy = usa + facet_wrap(~ year, ncol = 3) +
 usadairy
 ```
 
-As you can see, the clear winners here are Wisconsin and California. Number 3 is up for debate. It seems that our contenders are Texas, Minnesota, Iowa, Michigan, Ohio, Pennsylvania, and New York. This is a bit easier to work with.
+As you can see, the clear finalists in our pagent are Wisconsin and California. Number 3 is up for debate. It seems that our contenders are Texas, Minnesota, Iowa, Michigan, Ohio, Pennsylvania, and New York. This is a bit easier to work with.
 
 #### Winners and losers
 
-Since we have whittled our 50 states down to just these 7 contestants, it is now easier to differentiate between them in a line graph. So, that is exactly what we are going to do. 
+Since we have whittled our 50 contestants down to just these 7 candidates, it is now easier to differentiate between them in a line graph. So, that is exactly what we are going to do. 
 
 ```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, out.width='80%'}
 library(ggplot2)
@@ -147,7 +147,7 @@ dairycontest = dairy7 %>%
 dairycontest
 ```
 
-We can see here that even though Texas made an *epic* comback, New York is our best bet.As a proud Cyclone alum though, it's a little sad to see Iowa at the bottom. Thank goodness we still have corn... 
+We can see here that even though Texas made an *epic* comback, New York is our best bet. As a proud Cyclone alum though, it's a little sad to see Iowa at the bottom. Thank goodness we still have corn... 
 
 #### The finalists are...
 
@@ -172,7 +172,7 @@ dairytop3
 
 Even though California clearly has the most milk, you can tell it has been on a downward trend at the tail end while Wisconsin has continued to steadily grow. New York doesn't even stand a chance in this race. 
 
-### Final Recommendation
+### The judge is making the final deliberation
 
 As I mentioned above, there are other factors to consider when deciding on a location. Below are some key characteristics to note of our top 3 locations:
 
