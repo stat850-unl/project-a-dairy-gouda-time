@@ -315,6 +315,7 @@ share<-ggplot(melted,aes(x=x,y=value,group=x,fill=variable)) +
 ```{r shareplot,echo=FALSE}
 share
 ```
+
 To graph two different attributes in the same bar graph, the package Reshape was used (H. Wickham, 2007).
 
 #### Farm Share Percentage by Product
