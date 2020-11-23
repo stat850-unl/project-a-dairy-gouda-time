@@ -96,7 +96,7 @@ So it looks like our minimum value is 3,000,000 and our maximum value is 40,385,
 
 Well, that didn't help much, but logically, we can eliminate the lower bounds because we aren't interested in these small states with limited supply; we want the milk. 
 
-##### Welcome to Miss America 2020
+#### Welcome to Miss America 2020
 
 ```{r, include = FALSE}
 library(usmap)
