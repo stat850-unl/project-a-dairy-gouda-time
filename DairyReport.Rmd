@@ -440,6 +440,12 @@ This gives us the following dataset:
 str(FDA)
 ```
 
+The variables are:
+*Date - Date of recall, character later split into numeric dates and abbreviations
+*Brand Name - Character
+*Recall Reason - Character
+*Company Name - Character
+
 #### Interesting Entries
 Sometimes this data set had ambiguous entries. One of the items they recalled was Whole Foods 8-20-20. What does that mean? An entire store? Also, sometimes items are put into weird categories in product.type, so this variable was removed to avoid confusion or excessive filtering. Instead, I decided to search the dairy items by the Production Description. 
 ```{r wholefoods, echo=FALSE}
