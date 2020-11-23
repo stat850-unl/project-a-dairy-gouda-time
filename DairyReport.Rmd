@@ -12,13 +12,6 @@ library("pagedown")
 #uncomment to get packages for pretty document
 ```
 
-## OPE Here's a guideline I found. 
-Your written report should be approximately 2n+1 pages (or 450×(2n+1) words), where n is the number of people in your group. The extra page is to allow you space to describe your dataset, methods, and conclusions. The report should be grammatically correct, factually correct, with appropriate references, *including to the software packages you used to create it*. In order to find your package citations, you can use:
-
-```{r}
-citation("tidyverse")
-```
-
 ## Setting the stage
 
 Our consulting team has been approached by a wealthy business person. Our client, who just happens to love dairy products, has had the life-long dream of opening their own creamery. They are unsure of where to start, so we have been hired to aide in decision making throughout the process. Our major points of concern are where to locate the creamery, what products to make, and what difficulties could arise or things should we be aware of in terms of food safety. 
@@ -385,6 +378,7 @@ knitr::include_graphics("cheesepic.jpg")
 
 ## Building a Brand, and Reducing Recalls 
 
+When establishing a brand, food safety and consumer trust are **paramount**. One must produce quality products, but beyond that, food that has been contaminated with allergens or pathogens can greatly harm the consumer, and business as witnessed by the [Blue Bell Recalls](https://www.foodsafetynews.com/2019/08/the-blue-bell-ice-cream-listeria-outbreak-and-its-fallout/). In order for the client to be aware of the current hazards of the dairy industry, food recall data is presented with analysis in the recommendations below.
 
 ### Data Acquisition and Filtering
 In order to determine possible issues during the processes of products, we utilized the FDA food recall database listings from 2016-2020. These were procured as a .csv for 2018-2020, and scraped from archived FDA websites.
@@ -567,6 +561,7 @@ DT::datatable(febtable)
 A quick web search [confirmed](https://www.statnews.com/2017/03/09/cheese-recall-sargento-indiana/) this suspicion. Luckily, no one became sick from this outbreak, because such an efficient recall system was in place, however Sargento dropped this facility as a supplier. If our business person was looking to co-pack, they should be sure to implement safety and recall protocols. Even if they do not wish to copack, and remain a smaller producer, *Listeria* still remains a hazard to look out for, and they should be sure to understand how to mitigate its presence in product, otherwise there could be [large consequences](https://www.foodsafetynews.com/2018/04/vulto-creamery-shut-down-because-owner-did-not-understand/).
 
 ### Recommendations
+The producer will need to ensure proper practices in their plant, and audit potential copackers to control *L.monocytogenes*. If purchasing used equipment, microbial testing should be performed to ensure units are not contaminated with *Listeria* biofilms. Product-label matching should be performed as a critical control point for allergen labelling. 
 
 ## Conclusions
 
